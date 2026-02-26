@@ -24,10 +24,12 @@ const STATUSES = {
   implemented:  { label:"Built",       c:T.success, bg:T.successBg, bdr:T.successBdr, Icon:CheckCheck   },
   verified:     { label:"Live",        c:T.success, bg:T.successBg, bdr:T.successBdr, Icon:CheckCircle2 },
   reversed:     { label:"Reversed",    c:T.danger,  bg:T.dangerBg,  bdr:T.dangerBdr,  Icon:RotateCcw    },
+  denied:       { label:"Denied",      c:T.danger,  bg:T.dangerBg,  bdr:T.dangerBdr,  Icon:X            },
+  delegated:    { label:"Delegated",   c:"#C084FC", bg:"#1C1224",   bdr:"#3D2456",    Icon:ArrowRight   },
 };
 
 const OPEN_STATUSES = ["suggested","approved","in-progress"];
-const DONE_STATUSES = ["implemented","verified","reversed"];
+const DONE_STATUSES = ["implemented","verified","reversed","denied","delegated"];
 const CATS = ["Booking Flow","SEO","CRM / HubSpot","Landing Pages","Analytics","Design","Performance","Other"];
 const uid  = () => Math.random().toString(36).slice(2, 9);
 const fmt  = d => d ? new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "---";
@@ -270,7 +272,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
   const [expanded, setExp] = useState(null);
   const pMap = Object.fromEntries(projects.map(p=>[p.id,p]));
 
-  const open = [...changes].filter(c=>OPEN_STATUSES.includes(c.status)).sort((a,b)=>new Date(a.dateSubmitted)-new Date(b.dateSubmitted));
+  const open = [...changes].filter(c=>OPEN_STATUSES.includes(c.status)).sort((a,b)=>new Date(b.dateSubmitted)-new Date(a.dateSubmitted));
   const done = [...changes].filter(c=>DONE_STATUSES.includes(c.status)).sort((a,b)=>new Date(b.dateSubmitted)-new Date(a.dateSubmitted));
 
   const Card = ({c, last}) => {
@@ -359,7 +361,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
         <div style={{marginBottom:40}}>
           <div style={{marginBottom:20}}>
             <div style={{fontSize:17,fontWeight:800,color:T.text,marginBottom:4}}>Open Requests</div>
-            <div style={{fontSize:12,color:T.muted}}>What has been asked for and hasn't been built yet — oldest first</div>
+            <div style={{fontSize:12,color:T.muted}}>What has been asked for and hasn't been built yet — newest first</div>
           </div>
           {open.length===0?(
             <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:8,padding:32,textAlign:"center",color:T.muted,fontSize:13}}>No open requests.</div>
