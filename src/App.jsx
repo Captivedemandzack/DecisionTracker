@@ -2,13 +2,13 @@ import { useState, useMemo, useEffect } from "react";
 import {
   AlertTriangle, CheckCircle2, CircleDot, RotateCcw, Loader2,
   Pencil, Trash2, X, FileText, CheckCheck, ArrowRight, Mail,
-  Plus, ChevronDown, ChevronUp, Sparkles, Copy, Check,
+  Plus, ChevronDown, ChevronUp, Copy, Check, Eye,
 } from "lucide-react";
 
 const T = {
   bg:"#141418", surface:"#1E1E24", raised:"#28282F",
   border:"#40424D", borderSub:"#2A2A32",
-  text:"#F4F1ED", sub:"#9DA2B3", muted:"#6E7180", hint:"#2A2A32",
+  text:"#F4F1ED", sub:"#9DA2B3", muted:"#6E7180",
   lime:"#EEF3AD", limeBg:"#22260F", limeBdr:"#3D4220",
   danger:"#F97066", dangerBg:"#2D1A1A", dangerBdr:"#5C2424",
   warn:"#FDB022", warnBg:"#2D2214", warnBdr:"#5C3D10",
@@ -51,17 +51,17 @@ const PROJECTS_DEFAULT = [
 ];
 
 const SEED = [
-  {id:"c1",project:"p1",title:"Full website redesign - homepage, header and footer",description:"Conversion-focused redesign of Mantality Health's WordPress/Elementor site. New global header/footer. Previewed Dec 29, went live Jan 14.",suggestedBy:"v2",approvedBy:"v2",implementedBy:"v1",status:"verified",category:"Design",dateSubmitted:"2025-12-19",dateImplemented:"2026-01-14",evidenceNote:"",conflictsWith:[],priority:"high"},
-  {id:"c2",project:"p1",title:"Grant Captive Demand HubSpot Super Admin access",description:"Lacie initially invited Zachary to a Developer Sandbox instead of live portal. Rachel Scott granted Super Admin + Core seat on Jan 8.",suggestedBy:"v1",approvedBy:"v2",implementedBy:"v6",status:"verified",category:"CRM / HubSpot",dateSubmitted:"2025-12-19",dateImplemented:"2026-01-08",evidenceNote:"",conflictsWith:[],priority:"high"},
+  {id:"c1",project:"p1",title:"Full website redesign - homepage, header and footer",description:"Conversion-focused redesign of Mantality Health's WordPress/Elementor site.",suggestedBy:"v2",approvedBy:"v2",implementedBy:"v1",status:"verified",category:"Design",dateSubmitted:"2025-12-19",dateImplemented:"2026-01-14",evidenceNote:"",conflictsWith:[],priority:"high"},
+  {id:"c2",project:"p1",title:"Grant Captive Demand HubSpot Super Admin access",description:"Lacie initially invited Zachary to a Developer Sandbox. Rachel Scott granted Super Admin + Core seat on Jan 8.",suggestedBy:"v1",approvedBy:"v2",implementedBy:"v6",status:"verified",category:"CRM / HubSpot",dateSubmitted:"2025-12-19",dateImplemented:"2026-01-08",evidenceNote:"",conflictsWith:[],priority:"high"},
   {id:"c3",project:"p1",title:"Embed calendars in HubSpot landing pages (remove Cal.com redirect)",description:"Update HubSpot landing pages to embed booking calendars directly, removing Cal.com redirect.",suggestedBy:"v1",approvedBy:"v3",implementedBy:"v1",status:"in-progress",category:"Booking Flow",dateSubmitted:"2026-01-14",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"high"},
-  {id:"c4",project:"p1",title:"Cal.com drop-off tracking and drip workflow",description:"Rachel requested a HubSpot workflow for users who reach booking page but do not complete. Trigger automated text/email drip.",suggestedBy:"v3",approvedBy:null,implementedBy:null,status:"approved",category:"CRM / HubSpot",dateSubmitted:"2026-01-08",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"high"},
-  {id:"c5",project:"p1",title:"Replace Liine auto-call with text + delayed sales call flow",description:"Replace immediate Liine auto-call with: instant text confirming receipt, sales call 30 min later. If no connect: voicemail + email.",suggestedBy:"v3",approvedBy:null,implementedBy:null,status:"approved",category:"CRM / HubSpot",dateSubmitted:"2026-01-08",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"high"},
-  {id:"c6",project:"p1",title:"Install scroll/header tracker on redesigned site",description:"Per Wingman Media's request during Jan 13 strategy call, header scroll tracker installed for ad tracking.",suggestedBy:"v4",approvedBy:"v2",implementedBy:"v1",status:"verified",category:"Analytics",dateSubmitted:"2026-01-13",dateImplemented:"2026-01-14",evidenceNote:"",conflictsWith:[],priority:"medium"},
-  {id:"c7",project:"p1",title:"Cloudflare US-only traffic filter (block bot traffic)",description:"Sang Tang flagged heavy China bot traffic after launch. Requested Cloudflare geo-filter to allow US visitors only.",suggestedBy:"v7",approvedBy:null,implementedBy:null,status:"suggested",category:"Performance",dateSubmitted:"2026-01-15",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"medium"},
-  {id:"c8",project:"p1",title:"Fix mobile menu broken after redesign launch",description:"Cody Beck flagged mobile navigation not working after launch. Resolved same day via cache clear.",suggestedBy:"v6",approvedBy:"v6",implementedBy:"v1",status:"verified",category:"Design",dateSubmitted:"2026-01-14",dateImplemented:"2026-01-14",evidenceNote:"",conflictsWith:[],priority:"high"},
-  {id:"c9",project:"p1",title:"Replace Calendly links with Cal.com on location pages",description:"Sang Tang identified active Calendly links routing incorrectly. Hardcoded in FAQ text on location pages - updated to Cal.com.",suggestedBy:"v3",approvedBy:"v3",implementedBy:"v1",status:"implemented",category:"Booking Flow",dateSubmitted:"2026-01-15",dateImplemented:"2026-01-15",evidenceNote:"",conflictsWith:[],priority:"high"},
-  {id:"c10",project:"p1",title:"Audit old landing pages - unpublish, redirect, or keep",description:"Sang Tang flagged URLs still active: /low-t-quiz/, /book-an-appointment/, /radio/, location pages. Core SEO pages must stay.",suggestedBy:"v7",approvedBy:null,implementedBy:null,status:"suggested",category:"SEO",dateSubmitted:"2026-01-15",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"medium"},
-  {id:"c11",project:"p1",title:"Provide content assets - patient videos, outcome data, clinic photos",description:"Cody Beck needs to supply: patient testimonial videos, symptom improvement data, clinic photos. Upload to shared folder.",suggestedBy:"v1",approvedBy:"v6",implementedBy:null,status:"suggested",category:"Design",dateSubmitted:"2026-01-02",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"medium"},
+  {id:"c4",project:"p1",title:"Cal.com drop-off tracking and drip workflow",description:"HubSpot workflow for users who reach booking page but do not complete. Trigger automated text/email drip.",suggestedBy:"v3",approvedBy:null,implementedBy:null,status:"approved",category:"CRM / HubSpot",dateSubmitted:"2026-01-08",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"high"},
+  {id:"c5",project:"p1",title:"Replace Liine auto-call with text + delayed sales call flow",description:"Replace immediate Liine auto-call with: instant text confirming receipt, sales call 30 min later.",suggestedBy:"v3",approvedBy:null,implementedBy:null,status:"approved",category:"CRM / HubSpot",dateSubmitted:"2026-01-08",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"high"},
+  {id:"c6",project:"p1",title:"Install scroll/header tracker on redesigned site",description:"Header scroll tracker installed for ad tracking per Wingman Media request.",suggestedBy:"v4",approvedBy:"v2",implementedBy:"v1",status:"verified",category:"Analytics",dateSubmitted:"2026-01-13",dateImplemented:"2026-01-14",evidenceNote:"",conflictsWith:[],priority:"medium"},
+  {id:"c7",project:"p1",title:"Cloudflare US-only traffic filter (block bot traffic)",description:"Cloudflare geo-filter to allow US-only visitors. Heavy bot traffic flagged post-launch.",suggestedBy:"v7",approvedBy:null,implementedBy:null,status:"suggested",category:"Performance",dateSubmitted:"2026-01-15",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"medium"},
+  {id:"c8",project:"p1",title:"Fix mobile menu broken after redesign launch",description:"Mobile navigation not working after launch. Resolved same day via cache clear.",suggestedBy:"v6",approvedBy:"v6",implementedBy:"v1",status:"verified",category:"Design",dateSubmitted:"2026-01-14",dateImplemented:"2026-01-14",evidenceNote:"",conflictsWith:[],priority:"high"},
+  {id:"c9",project:"p1",title:"Replace Calendly links with Cal.com on location pages",description:"Old Calendly links hardcoded in FAQ text on location pages - updated to Cal.com.",suggestedBy:"v3",approvedBy:"v3",implementedBy:"v1",status:"implemented",category:"Booking Flow",dateSubmitted:"2026-01-15",dateImplemented:"2026-01-15",evidenceNote:"",conflictsWith:[],priority:"high"},
+  {id:"c10",project:"p1",title:"Audit old landing pages - unpublish, redirect, or keep",description:"URLs still active: /low-t-quiz/, /book-an-appointment/, /radio/. Core SEO pages must stay.",suggestedBy:"v7",approvedBy:null,implementedBy:null,status:"suggested",category:"SEO",dateSubmitted:"2026-01-15",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"medium"},
+  {id:"c11",project:"p1",title:"Provide content assets - patient videos, outcome data, clinic photos",description:"Patient testimonial videos, symptom improvement data, clinic photos needed.",suggestedBy:"v1",approvedBy:"v6",implementedBy:null,status:"suggested",category:"Design",dateSubmitted:"2026-01-02",dateImplemented:null,evidenceNote:"",conflictsWith:[],priority:"medium"},
 ];
 
 // ── localStorage ──────────────────────────────────────────────────
@@ -88,7 +88,7 @@ function extractJSON(raw) {
   return objs.length?objs:null;
 }
 
-// ── UI Atoms ──────────────────────────────────────────────────────
+// ── Atoms ─────────────────────────────────────────────────────────
 const Badge = ({status}) => {
   const s=STATUSES[status]||STATUSES.suggested;
   return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:3,color:s.c,background:s.bg,border:"1px solid "+s.bdr,whiteSpace:"nowrap",letterSpacing:"0.04em",textTransform:"uppercase"}}><s.Icon size={9} strokeWidth={2.5}/>{s.label}</span>;
@@ -96,7 +96,7 @@ const Badge = ({status}) => {
 const Chip = ({name}) => name
   ?<span style={{fontSize:11,fontWeight:500,padding:"2px 9px",borderRadius:3,background:T.raised,color:T.sub,border:"1px solid "+T.border,whiteSpace:"nowrap"}}>{name}</span>
   :<span style={{color:T.muted,fontSize:11}}>—</span>;
-const PTag = ({name,color}) => <span style={{fontSize:11,fontWeight:600,padding:"2px 8px",borderRadius:3,background:color+"22",color:color,border:"1px solid "+color+"44",whiteSpace:"nowrap"}}>{name}</span>;
+const PTag = ({name,color}) => <span style={{fontSize:11,fontWeight:600,padding:"2px 8px",borderRadius:3,background:color+"22",color,border:"1px solid "+color+"44",whiteSpace:"nowrap"}}>{name}</span>;
 const Lbl = ({children}) => <div style={{fontSize:10,fontWeight:700,color:T.muted,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>{children}</div>;
 const HR = () => <div style={{height:1,background:T.borderSub}}/>;
 const GhostBtn = ({onClick,children,danger}) => (
@@ -207,53 +207,54 @@ function FormModal({ editId, form, setForm, onSave, onClose, projects, vendors, 
 }
 
 // ── Client View ───────────────────────────────────────────────────
-function ClientView({ changes, projects, vendors, conflictSet }) {
+function ClientView({ changes, projects, vendors, conflictSet, brief }) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [expanded, setExp] = useState(null);
-  const brief = loadLS(LS.brief, null);
   const pMap = Object.fromEntries(projects.map(p=>[p.id,p]));
 
   const open = [...changes].filter(c=>OPEN_STATUSES.includes(c.status)).sort((a,b)=>new Date(a.dateSubmitted)-new Date(b.dateSubmitted));
   const done = [...changes].filter(c=>DONE_STATUSES.includes(c.status)).sort((a,b)=>new Date(b.dateSubmitted)-new Date(a.dateSubmitted));
 
-  const RequestCard = ({c, dimmed=false, last=false}) => {
-    const isOpen = expanded===c.id;
+  const Card = ({c, last}) => {
+    const isExp = expanded===c.id;
     const hasConflict = conflictSet.has(c.id);
     const proj = pMap[c.project];
     const conflictTitles = (c.conflictsWith||[]).map(cid=>changes.find(x=>x.id===cid)?.title).filter(Boolean);
 
     return (
-      <div style={{borderBottom:last?"none":"1px solid "+T.borderSub, opacity:dimmed?0.65:1}}>
-        <div onClick={()=>setExp(isOpen?null:c.id)} style={{padding:"14px 0",cursor:"pointer",display:"flex",alignItems:"flex-start",gap:10}}>
-          <div style={{width:3,minHeight:20,alignSelf:"stretch",borderRadius:2,background:hasConflict?T.danger:"transparent",flexShrink:0,marginTop:3}}/>
+      <div style={{borderBottom:last?"none":"1px solid "+T.borderSub}}>
+        <div onClick={()=>setExp(isExp?null:c.id)} style={{padding:"16px 0",cursor:"pointer",display:"flex",alignItems:"flex-start",gap:12}}>
+          {/* conflict stripe */}
+          <div style={{width:3,borderRadius:2,alignSelf:"stretch",background:hasConflict?T.danger:OPEN_STATUSES.includes(c.status)?T.border:"transparent",flexShrink:0}}/>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{display:"flex",alignItems:"center",gap:7,marginBottom:5,flexWrap:"wrap"}}>
-              {hasConflict&&<AlertTriangle size={12} color={T.danger}/>}
-              <span style={{fontWeight:600,fontSize:13,color:T.text}}>{c.title}</span>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
+              {hasConflict&&<AlertTriangle size={13} color={T.danger}/>}
+              <span style={{fontWeight:700,fontSize:14,color:hasConflict?T.danger:T.text,lineHeight:1.4}}>{c.title}</span>
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
               {proj&&<PTag name={proj.name} color={proj.color}/>}
-              <span style={{fontSize:10,color:T.muted}}>{c.category}</span>
-              <span style={{fontSize:10,color:T.muted}}>{fmt(c.dateSubmitted)}</span>
+              <span style={{fontSize:11,color:T.muted}}>{c.category}</span>
+              <span style={{fontSize:11,color:T.muted}}>Submitted {fmt(c.dateSubmitted)}</span>
             </div>
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-            <Badge status={c.status}/>
-            {isOpen?<ChevronUp size={13} color={T.muted}/>:<ChevronDown size={13} color={T.muted}/>}
-          </div>
-        </div>
-        {isOpen&&(
-          <div style={{paddingBottom:16,paddingLeft:13}} onClick={e=>e.stopPropagation()}>
-            {c.description&&<div style={{fontSize:12,color:T.sub,lineHeight:1.8,marginBottom:hasConflict&&conflictTitles.length?12:0}}>{c.description}</div>}
+            {/* Conflict notice — always visible, no click required */}
             {hasConflict&&conflictTitles.length>0&&(
-              <div style={{display:"inline-flex",alignItems:"flex-start",gap:8,background:T.dangerBg,border:"1px solid "+T.dangerBdr,borderRadius:6,padding:"10px 14px",marginTop:c.description?0:4}}>
+              <div style={{marginTop:10,display:"inline-flex",alignItems:"flex-start",gap:8,background:T.dangerBg,border:"1px solid "+T.dangerBdr,borderRadius:6,padding:"9px 13px"}}>
                 <AlertTriangle size={12} color={T.danger} style={{marginTop:1,flexShrink:0}}/>
                 <div>
-                  <div style={{fontSize:10,fontWeight:700,color:T.danger,textTransform:"uppercase",letterSpacing:"0.06em",marginBottom:4}}>Conflicts with</div>
-                  {conflictTitles.map((t,i)=><div key={i} style={{fontSize:11,color:T.danger,lineHeight:1.7}}>{t}</div>)}
+                  <div style={{fontSize:10,fontWeight:700,color:T.danger,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>Conflicts with</div>
+                  {conflictTitles.map((t,i)=><div key={i} style={{fontSize:12,color:T.danger,lineHeight:1.6}}>"{t}"</div>)}
                 </div>
               </div>
             )}
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+            <Badge status={c.status}/>
+            {isExp?<ChevronUp size={13} color={T.muted}/>:<ChevronDown size={13} color={T.muted}/>}
+          </div>
+        </div>
+        {isExp&&(
+          <div style={{paddingBottom:18,paddingLeft:15,paddingRight:4}} onClick={e=>e.stopPropagation()}>
+            {c.description&&<div style={{fontSize:13,color:T.sub,lineHeight:1.8}}>{c.description}</div>}
           </div>
         )}
       </div>
@@ -262,65 +263,66 @@ function ClientView({ changes, projects, vendors, conflictSet }) {
 
   return (
     <div style={{fontFamily:F,background:T.bg,color:T.text,minHeight:"100vh",fontSize:13,lineHeight:1.5}}>
-      <style>{`@keyframes spin{to{transform:rotate(360deg);}}`}</style>
       {/* Header */}
-      <div style={{borderBottom:"1px solid "+T.border,padding:"20px 32px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{borderBottom:"1px solid "+T.border,padding:"24px 40px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div>
-          <div style={{fontSize:10,fontWeight:700,color:T.lime,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>Captive Demand</div>
-          <div style={{fontSize:20,fontWeight:800,color:T.text,letterSpacing:"-0.02em"}}>Request Tracker</div>
+          <div style={{fontSize:10,fontWeight:700,color:T.lime,textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:5}}>Captive Demand</div>
+          <div style={{fontSize:22,fontWeight:800,color:T.text,letterSpacing:"-0.02em"}}>Request Overview</div>
         </div>
-        <div style={{display:"flex",gap:16,alignItems:"center"}}>
+        <div style={{display:"flex",gap:20}}>
           <div style={{textAlign:"right"}}>
-            <div style={{fontSize:10,color:T.muted,textTransform:"uppercase",letterSpacing:"0.06em"}}>Open</div>
-            <div style={{fontSize:26,fontWeight:800,color:T.warn,lineHeight:1}}>{open.length}</div>
+            <div style={{fontSize:10,color:T.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:2}}>Open</div>
+            <div style={{fontSize:28,fontWeight:800,color:T.warn,lineHeight:1}}>{open.length}</div>
           </div>
           {conflictSet.size>0&&(
             <div style={{textAlign:"right"}}>
-              <div style={{fontSize:10,color:T.muted,textTransform:"uppercase",letterSpacing:"0.06em"}}>Conflicts</div>
-              <div style={{fontSize:26,fontWeight:800,color:T.danger,lineHeight:1}}>{conflictSet.size}</div>
+              <div style={{fontSize:10,color:T.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:2}}>Conflicts</div>
+              <div style={{fontSize:28,fontWeight:800,color:T.danger,lineHeight:1}}>{conflictSet.size}</div>
             </div>
           )}
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:10,color:T.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:2}}>Total</div>
+            <div style={{fontSize:28,fontWeight:800,color:T.sub,lineHeight:1}}>{changes.length}</div>
+          </div>
         </div>
       </div>
 
-      <div style={{maxWidth:760,margin:"0 auto",padding:"28px 32px"}}>
-        {/* AI Brief */}
-        {brief&&(
-          <div style={{background:T.surface,border:"1px solid "+T.limeBdr,borderLeft:"3px solid "+T.lime,borderRadius:8,padding:"18px 22px",marginBottom:28}}>
-            <div style={{fontSize:9,fontWeight:700,color:T.lime,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:10,display:"flex",alignItems:"center",gap:6}}>
-              <Sparkles size={10}/>Strategic Overview
-            </div>
-            <div style={{fontSize:13,color:T.sub,lineHeight:1.9}}>{brief.text}</div>
-            {brief.generatedAt&&<div style={{fontSize:10,color:T.muted,marginTop:10}}>Last updated {fmt(brief.generatedAt)}</div>}
+      <div style={{maxWidth:800,margin:"0 auto",padding:"36px 40px"}}>
+
+        {/* Note from Captive Demand */}
+        {brief&&brief.trim()&&(
+          <div style={{background:T.surface,borderLeft:"3px solid "+T.lime,borderRadius:8,padding:"20px 24px",marginBottom:36}}>
+            <div style={{fontSize:10,fontWeight:700,color:T.lime,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:12}}>Note from Captive Demand</div>
+            <div style={{fontSize:14,color:T.sub,lineHeight:1.9,whiteSpace:"pre-wrap"}}>{brief}</div>
           </div>
         )}
 
         {/* Open requests */}
-        <div style={{marginBottom:32}}>
-          <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:16}}>
-            <div style={{fontSize:15,fontWeight:800,color:T.text}}>Open Requests</div>
-            <div style={{fontSize:11,color:T.muted}}>{open.length} awaiting action · oldest first</div>
+        <div style={{marginBottom:40}}>
+          <div style={{marginBottom:20}}>
+            <div style={{fontSize:17,fontWeight:800,color:T.text,marginBottom:4}}>Open Requests</div>
+            <div style={{fontSize:12,color:T.muted}}>What has been asked for and hasn't been built yet — oldest first</div>
           </div>
           {open.length===0?(
-            <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:8,padding:24,textAlign:"center",color:T.muted,fontSize:12}}>No open requests right now.</div>
+            <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:8,padding:32,textAlign:"center",color:T.muted,fontSize:13}}>No open requests.</div>
           ):(
-            <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:8,padding:"0 20px"}}>
-              {open.map((c,i)=><RequestCard key={c.id} c={c} last={i===open.length-1}/>)}
+            <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:10,padding:"0 24px"}}>
+              {open.map((c,i)=><Card key={c.id} c={c} last={i===open.length-1}/>)}
             </div>
           )}
         </div>
 
-        {/* Completed toggle */}
+        {/* Completed */}
         {done.length>0&&(
           <div>
-            <button onClick={()=>setShowCompleted(v=>!v)} style={{display:"flex",alignItems:"center",gap:8,background:"none",border:"none",cursor:"pointer",padding:"0 0 16px",fontFamily:F}}>
-              <span style={{fontSize:13,fontWeight:600,color:T.muted}}>{showCompleted?"Hide":"Show"} completed</span>
-              <span style={{fontSize:11,color:T.muted,background:T.raised,border:"1px solid "+T.border,borderRadius:10,padding:"1px 8px"}}>{done.length}</span>
-              {showCompleted?<ChevronUp size={13} color={T.muted}/>:<ChevronDown size={13} color={T.muted}/>}
+            <button onClick={()=>setShowCompleted(v=>!v)} style={{display:"flex",alignItems:"center",gap:10,background:"none",border:"none",cursor:"pointer",padding:"0 0 20px",fontFamily:F}}>
+              <span style={{fontSize:14,fontWeight:700,color:T.muted}}>{showCompleted?"Hide":"Show"} completed</span>
+              <span style={{fontSize:11,color:T.muted,background:T.raised,border:"1px solid "+T.border,borderRadius:10,padding:"2px 10px"}}>{done.length}</span>
+              {showCompleted?<ChevronUp size={14} color={T.muted}/>:<ChevronDown size={14} color={T.muted}/>}
             </button>
             {showCompleted&&(
-              <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:8,padding:"0 20px"}}>
-                {done.map((c,i)=><RequestCard key={c.id} c={c} dimmed last={i===done.length-1}/>)}
+              <div style={{background:T.surface,border:"1px solid "+T.border,borderRadius:10,padding:"0 24px",opacity:0.6}}>
+                {done.map((c,i)=><Card key={c.id} c={c} last={i===done.length-1}/>)}
               </div>
             )}
           </div>
@@ -332,7 +334,7 @@ function ClientView({ changes, projects, vendors, conflictSet }) {
 
 // ── Main App ──────────────────────────────────────────────────────
 export default function App() {
-  const isClientView = new URLSearchParams(window.location.search).get("view")==="client";
+  const isClient = new URLSearchParams(window.location.search).get("view")==="client";
 
   const [tab,      setTab]  = useState("overview");
   const [changes,  setChgs] = useState(()=>loadLS(LS.changes,  SEED));
@@ -346,8 +348,8 @@ export default function App() {
   const [fStat,    setFS]   = useState("all");
   const [fVend,    setFV]   = useState("all");
   const [search,   setSrch] = useState("");
-  const [brief,    setBrief]= useState(()=>loadLS(LS.brief, null));
-  const [briefLoad,setBriefLoad]=useState(false);
+  const [brief,    setBrief]= useState(()=>loadLS(LS.brief,""));
+  const [briefEdit,setBriefEdit]=useState(false);
   const [copied,   setCopied]=useState(false);
 
   useEffect(()=>saveLS(LS.changes,  changes),  [changes]);
@@ -406,72 +408,63 @@ export default function App() {
     setImp(false);
   }
 
-  async function generateBrief(){
-    const open=changes.filter(c=>OPEN_STATUSES.includes(c.status));
-    if(!open.length)return;
-    setBriefLoad(true);
-    const summary=open.map(c=>`- [${c.status.toUpperCase()}] "${c.title}"${c.description?" — "+c.description.slice(0,120):""}${c.conflictsWith?.length?" ⚠️ CONFLICTS WITH ANOTHER REQUEST":""}`).join("\n");
-    try{
-      const res=await fetch("/api/claude",{
-        method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",max_tokens:350,
-          system:`You are a strategic advisor reviewing website change requests on behalf of a web development agency. Write 2-3 sentences max. Be direct, specific, and plain. Your job: (1) identify what the client is really trying to achieve across all these requests, (2) flag any requests that contradict each other by name, and (3) if any request seems like it may not be the best path to the real goal, say so plainly. Address the client directly as "you". No bullet points. No headers. Just plain prose.`,
-          messages:[{role:"user",content:`Here are the current open requests:\n\n${summary}\n\nWrite the strategic brief.`}]
-        })
-      });
-      const data=await res.json();
-      const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
-      if(text){const b={text,generatedAt:new Date().toISOString().slice(0,10)};setBrief(b);saveLS(LS.brief,b);}
-    }catch(e){console.error(e);}
-    finally{setBriefLoad(false);}
-  }
-
-  function copyClientLink(){
-    const url=window.location.origin+"?view=client";
-    navigator.clipboard.writeText(url).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});
+  function copyLink(){
+    navigator.clipboard.writeText(window.location.origin+"?view=client").then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);});
   }
 
   const totalOpen=changes.filter(c=>OPEN_STATUSES.includes(c.status)).length;
   const totalConf=conflictSet.size;
 
-  // ── Client view shortcircuit ─────────────────────────────────
-  if(isClientView){
-    return <ClientView changes={changes} projects={projects} vendors={vendors} conflictSet={conflictSet}/>;
+  if(isClient){
+    return <ClientView changes={changes} projects={projects} vendors={vendors} conflictSet={conflictSet} brief={brief}/>;
   }
 
-  // ── Internal tool ─────────────────────────────────────────────
+  // ── Overview tab ──────────────────────────────────────────────
   const Overview = () => {
     const flags  =changes.filter(c=>conflictSet.has(c.id));
     const pending=changes.filter(c=>OPEN_STATUSES.includes(c.status));
     const recent =changes.filter(c=>DONE_STATUSES.includes(c.status)).slice(0,6);
     const goTo=id=>{setTab("log");setExp(id);};
+
     return (
       <div>
-        <style>{`@keyframes spin{to{transform:rotate(360deg);}}`}</style>
-        {/* Brief control card */}
-        <div style={{background:T.surface,border:"1px solid "+T.limeBdr,borderLeft:"3px solid "+T.lime,borderRadius:8,padding:"16px 20px",marginBottom:20}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:brief?12:0}}>
-            <div style={{fontSize:9,fontWeight:700,color:T.lime,textTransform:"uppercase",letterSpacing:"0.1em",display:"flex",alignItems:"center",gap:6}}>
-              <Sparkles size={10}/>Strategic Brief
+        {/* ── Client note editor ── */}
+        <div style={{background:T.surface,border:"1px solid "+T.border,borderLeft:"3px solid "+T.lime,borderRadius:8,padding:"18px 20px",marginBottom:24}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+            <div>
+              <div style={{fontSize:11,fontWeight:700,color:T.lime,textTransform:"uppercase",letterSpacing:"0.1em"}}>Client Note</div>
+              <div style={{fontSize:11,color:T.muted,marginTop:3}}>This appears at the top of the client view. Write whatever you want them to read first.</div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <button onClick={copyClientLink} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"5px 10px",borderRadius:4,border:"1px solid "+T.border,background:T.raised,cursor:"pointer",fontSize:10,fontWeight:600,color:copied?T.success:T.sub,fontFamily:F}}>
-                {copied?<Check size={10}/>:<Copy size={10}/>}{copied?"Copied!":"Copy client link"}
+              <button onClick={copyLink} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:5,border:"1px solid "+T.border,background:T.raised,cursor:"pointer",fontSize:11,fontWeight:600,color:copied?T.success:T.sub,fontFamily:F}}>
+                {copied?<Check size={11}/>:<Copy size={11}/>}{copied?"Copied!":"Copy client link"}
               </button>
-              <button onClick={generateBrief} disabled={briefLoad} style={{display:"inline-flex",alignItems:"center",gap:5,padding:"5px 10px",borderRadius:4,border:"none",background:T.lime,cursor:briefLoad?"not-allowed":"pointer",fontSize:10,fontWeight:700,color:"#1a1d0a",fontFamily:F,opacity:briefLoad?0.6:1}}>
-                {briefLoad?<Loader2 size={10} style={{animation:"spin 1s linear infinite"}}/>:<Sparkles size={10}/>}
-                {briefLoad?"Generating...":brief?"Regenerate":"Generate brief"}
-              </button>
+              <a href="?view=client" target="_blank" style={{display:"inline-flex",alignItems:"center",gap:5,padding:"6px 12px",borderRadius:5,border:"1px solid "+T.border,background:T.raised,cursor:"pointer",fontSize:11,fontWeight:600,color:T.sub,fontFamily:F,textDecoration:"none"}}>
+                <Eye size={11}/>Preview
+              </a>
             </div>
           </div>
-          {brief?(
-            <>
-              <div style={{fontSize:12,color:T.sub,lineHeight:1.8}}>{brief.text}</div>
-              <div style={{fontSize:10,color:T.muted,marginTop:8}}>Generated {fmt(brief.generatedAt)} · Clients see this when you share the link</div>
-            </>
-          ):(
-            <div style={{fontSize:11,color:T.muted,marginTop:8}}>Click "Generate brief" to create an AI summary of open requests. Saves automatically. Clients see it when you share the link.</div>
+          {briefEdit ? (
+            <div>
+              <textarea
+                autoFocus
+                value={brief}
+                onChange={e=>setBrief(e.target.value)}
+                placeholder={"Write a note to your client here. For example:\n\n\"Before we kick off the next sprint, we want to flag something. You've asked us to build a drop-off tracking workflow and also to remove the Cal.com redirect — but these two things depend on each other. Let's get on a call and decide which direction we're going first.\""}
+                rows={6}
+                style={{background:T.bg,border:"1px solid "+T.limeBdr,color:T.text,borderRadius:6,padding:"12px 14px",fontFamily:F,fontSize:13,outline:"none",width:"100%",boxSizing:"border-box",resize:"vertical",lineHeight:1.8,color:T.sub}}
+              />
+              <div style={{display:"flex",justifyContent:"flex-end",marginTop:10,gap:8}}>
+                <GhostBtn onClick={()=>setBriefEdit(false)}>Done</GhostBtn>
+              </div>
+            </div>
+          ) : (
+            <div
+              onClick={()=>setBriefEdit(true)}
+              style={{minHeight:52,padding:"10px 14px",background:T.bg,border:"1px solid "+(brief?T.border:T.borderSub),borderRadius:6,cursor:"text",fontSize:13,color:brief?T.sub:T.muted,lineHeight:1.8,whiteSpace:"pre-wrap"}}
+            >
+              {brief||"Click to write a note for your client..."}
+            </div>
           )}
         </div>
 
@@ -479,18 +472,17 @@ export default function App() {
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
           {projects.map(proj=>{
             const pc=changes.filter(c=>c.project===proj.id);
-            const live=pc.filter(c=>DONE_STATUSES.includes(c.status)).length;
+            const done=pc.filter(c=>DONE_STATUSES.includes(c.status)).length;
             const pend=pc.filter(c=>OPEN_STATUSES.includes(c.status)).length;
             const disc=pc.filter(c=>conflictSet.has(c.id)).length;
             return (
-              <div key={proj.id} onClick={()=>{setFP(proj.id);setTab("log");}}
-                style={{background:T.surface,border:"1px solid "+T.border,borderTop:"3px solid "+proj.color,borderRadius:8,padding:"16px 18px",cursor:"pointer"}}>
+              <div key={proj.id} onClick={()=>{setFP(proj.id);setTab("log");}} style={{background:T.surface,border:"1px solid "+T.border,borderTop:"3px solid "+proj.color,borderRadius:8,padding:"16px 18px",cursor:"pointer"}}>
                 <div style={{fontWeight:700,fontSize:13,color:T.text,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                   {proj.name}
                   {disc>0&&<span style={{fontSize:9,fontWeight:700,background:T.dangerBg,color:T.danger,border:"1px solid "+T.dangerBdr,borderRadius:3,padding:"2px 6px"}}>CONFLICT</span>}
                 </div>
                 <div style={{display:"flex",gap:16}}>
-                  {[["Total",pc.length,T.sub],["Done",live,T.success],["Open",pend,T.warn],["Flags",disc,disc>0?T.danger:T.muted]].map(([lbl,num,col])=>(
+                  {[["Total",pc.length,T.sub],["Done",done,T.success],["Open",pend,T.warn],["Flags",disc,disc>0?T.danger:T.muted]].map(([lbl,num,col])=>(
                     <div key={lbl}><div style={{fontSize:9,fontWeight:700,color:T.muted,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:3}}>{lbl}</div><div style={{fontSize:21,fontWeight:800,color:col,lineHeight:1}}>{num}</div></div>
                   ))}
                 </div>
@@ -499,6 +491,7 @@ export default function App() {
           })}
         </div>
 
+        {/* Conflict panel */}
         {flags.length>0&&(
           <div style={{background:T.dangerBg,border:"1px solid "+T.dangerBdr,borderRadius:8,padding:"14px 16px",marginBottom:20}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
@@ -534,6 +527,7 @@ export default function App() {
     );
   };
 
+  // ── Log tab ───────────────────────────────────────────────────
   const Log = () => {
     const ss={background:T.surface,border:"1px solid "+T.border,color:T.sub,borderRadius:5,padding:"8px 10px",fontFamily:F,fontSize:11,outline:"none",cursor:"pointer"};
     return (
@@ -557,24 +551,17 @@ export default function App() {
                     <div style={{display:"flex",alignItems:"flex-start",gap:12}}>
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{fontWeight:600,fontSize:12,color:T.text,display:"flex",gap:6,alignItems:"center",marginBottom:5,flexWrap:"wrap"}}>{hasD&&<AlertTriangle size={12} color={T.danger}/>}{c.title}</div>
-                        <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
-                          {proj&&<PTag name={proj.name} color={proj.color}/>}
-                          <span style={{fontSize:10,color:T.muted}}>{c.category}</span>
-                          <span style={{fontSize:10,color:T.muted}}>{fmt(c.dateSubmitted)}</span>
-                          {c.dateImplemented&&<span style={{fontSize:10,color:T.success}}>Live {fmt(c.dateImplemented)}</span>}
-                        </div>
+                        <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>{proj&&<PTag name={proj.name} color={proj.color}/>}<span style={{fontSize:10,color:T.muted}}>{c.category}</span><span style={{fontSize:10,color:T.muted}}>{fmt(c.dateSubmitted)}</span>{c.dateImplemented&&<span style={{fontSize:10,color:T.success}}>Live {fmt(c.dateImplemented)}</span>}</div>
                       </div>
                       <div style={{display:"flex",gap:7,alignItems:"center",flexShrink:0}}><Chip name={vMap[c.suggestedBy]?.name}/><Badge status={c.status}/>{isOpen?<ChevronUp size={13} color={T.muted}/>:<ChevronDown size={13} color={T.muted}/>}</div>
                     </div>
                   </div>
                   {isOpen&&(
                     <div style={{padding:"16px 20px",borderTop:"1px solid "+T.borderSub,background:T.bg}} onClick={e=>e.stopPropagation()}>
-                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:14}}>
-                        {[["Requested by",c.suggestedBy],["Approved by",c.approvedBy],["Built by",c.implementedBy]].map(([lbl,vid])=>(<div key={lbl}><Lbl>{lbl}</Lbl><Chip name={vMap[vid]?.name}/></div>))}
-                      </div>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:14}}>{[["Requested by",c.suggestedBy],["Approved by",c.approvedBy],["Built by",c.implementedBy]].map(([lbl,vid])=>(<div key={lbl}><Lbl>{lbl}</Lbl><Chip name={vMap[vid]?.name}/></div>))}</div>
                       {c.description&&<div style={{marginBottom:12}}><Lbl>What was asked</Lbl><div style={{fontSize:12,color:T.sub,lineHeight:1.7}}>{c.description}</div></div>}
                       {c.evidenceNote&&(<div style={{background:T.raised,border:"1px solid "+T.border,borderRadius:6,padding:"10px 12px",marginBottom:12}}><div style={{display:"flex",gap:5,alignItems:"center",marginBottom:5}}><FileText size={10} color={T.muted}/><Lbl>Evidence</Lbl></div><div style={{fontSize:11,color:T.muted,lineHeight:1.7,fontStyle:"italic"}}>{c.evidenceNote}</div></div>)}
-                      {c.conflictsWith?.length>0&&(<div style={{background:T.dangerBg,border:"1px solid "+T.dangerBdr,borderRadius:5,padding:"9px 11px",marginBottom:12}}><div style={{display:"flex",gap:5,alignItems:"center",color:T.danger,fontSize:11,fontWeight:600}}><AlertTriangle size={11}/>Contradicts: {c.conflictsWith.map(cid=>{const found=changes.find(x=>x.id===cid);return found?found.title.slice(0,45)+"...":""}).filter(Boolean).join(", ")}</div></div>)}
+                      {c.conflictsWith?.length>0&&(<div style={{background:T.dangerBg,border:"1px solid "+T.dangerBdr,borderRadius:5,padding:"9px 11px",marginBottom:12}}><div style={{display:"flex",gap:5,alignItems:"center",color:T.danger,fontSize:11,fontWeight:600}}><AlertTriangle size={11}/>Contradicts: {c.conflictsWith.map(cid=>{const f=changes.find(x=>x.id===cid);return f?f.title.slice(0,45)+"...":""}).filter(Boolean).join(", ")}</div></div>)}
                       <div style={{display:"flex",gap:7}}><GhostBtn onClick={()=>openEdit(c)}><Pencil size={10}/>Edit</GhostBtn><GhostBtn danger onClick={()=>del(c.id)}><Trash2 size={10}/>Remove</GhostBtn></div>
                     </div>
                   )}
@@ -587,6 +574,7 @@ export default function App() {
     );
   };
 
+  // ── Stakeholders tab ──────────────────────────────────────────
   const Stakeholders = () => (
     <div>
       <div style={{fontSize:12,color:T.muted,marginBottom:20,lineHeight:1.6}}>Everyone involved across your projects and what they have contributed.</div>
