@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   AlertTriangle, CheckCircle2, CircleDot, RotateCcw, Loader2,
   Pencil, Trash2, X, FileText, CheckCheck, ArrowRight, Mail,
@@ -416,6 +416,44 @@ export default function App() {
   useEffect(()=>saveLS(LS.vendors,  vendors),  [vendors]);
   useEffect(()=>saveLS(LS.projects, projects), [projects]);
   useEffect(()=>saveLS(LS.brief,    brief),    [brief]);
+
+  // ── Cloud sync (Netlify Blobs) ─────────────────────────────────
+  // cloudReady gates saves so we never overwrite cloud data with stale
+  // localStorage before the initial fetch completes.
+  const cloudReady   = useRef(false);
+  const saveTimer    = useRef(null);
+
+  function saveToCloud(payload) {
+    if (!cloudReady.current) return;
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      fetch("/api/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+    }, 1500);
+  }
+
+  // On mount: pull cloud data, hydrate state + localStorage cache
+  useEffect(() => {
+    fetch("/api/data")
+      .then(r => r.json())
+      .then(data => {
+        if (!data) return;
+        if (data.changes)              { setChgs(data.changes);   saveLS(LS.changes,  data.changes);  }
+        if (data.vendors)              { setVends(data.vendors);  saveLS(LS.vendors,  data.vendors);  }
+        if (data.projects)             { setProjs(data.projects); saveLS(LS.projects, data.projects); }
+        if (typeof data.brief==="string") { setBrief(data.brief); saveLS(LS.brief,    data.brief);    }
+      })
+      .catch(() => {})
+      .finally(() => { cloudReady.current = true; });
+  }, []);
+
+  // Whenever data changes, persist to cloud (debounced 1.5 s)
+  useEffect(() => {
+    saveToCloud({ changes, vendors, projects, brief });
+  }, [changes, vendors, projects, brief]);
 
   const blank={id:null,project:PROJECTS_DEFAULT[0].id,title:"",description:"",suggestedBy:"",approvedBy:"",implementedBy:"",status:"suggested",category:"Other",dateSubmitted:new Date().toISOString().slice(0,10),dateImplemented:"",evidenceNote:"",conflictsWith:[],priority:"medium"};
   const [form,setForm]=useState(blank);
