@@ -83,13 +83,30 @@ const SEED = [
 ];
 
 // ── localStorage ──────────────────────────────────────────────────
-const LS = { changes:"cd_changes", vendors:"cd_vendors", projects:"cd_projects", brief:"cd_brief" };
+// Bump SEED_VERSION whenever SEED, VENDORS_DEFAULT, or PROJECTS_DEFAULT
+// changes. On load, if the stored version doesn't match, localStorage is
+// wiped and the fresh seed data is used instead.
+const SEED_VERSION = "2";
+
+const LS = { changes:"cd_changes", vendors:"cd_vendors", projects:"cd_projects", brief:"cd_brief", seedVer:"cd_seed_version" };
 function loadLS(key, fallback) {
   try { const v=localStorage.getItem(key); return v?JSON.parse(v):fallback; } catch { return fallback; }
 }
 function saveLS(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
 }
+function resetSeedIfStale() {
+  try {
+    const stored = localStorage.getItem(LS.seedVer);
+    if (stored !== SEED_VERSION) {
+      localStorage.removeItem(LS.changes);
+      localStorage.removeItem(LS.vendors);
+      localStorage.removeItem(LS.projects);
+      localStorage.setItem(LS.seedVer, SEED_VERSION);
+    }
+  } catch {}
+}
+resetSeedIfStale();
 
 // ── Helpers ───────────────────────────────────────────────────────
 function extractJSON(raw) {
