@@ -195,7 +195,30 @@ function FormModal({ editId, form, setForm, onSave, onClose, projects, vendors, 
           <div><Lbl>Date completed</Lbl><input type="date" style={inp} value={form.dateImplemented||""} onChange={e=>setForm(v=>({...v,dateImplemented:e.target.value}))}/></div>
           <div style={{gridColumn:"span 2"}}><Lbl>What was asked for</Lbl><textarea style={{...inp,minHeight:64,resize:"vertical"}} value={form.description} onChange={e=>setForm(v=>({...v,description:e.target.value}))} placeholder="Full context of the request..."/></div>
           <div style={{gridColumn:"span 2"}}><Lbl>Evidence</Lbl><textarea style={{...inp,minHeight:60,resize:"vertical"}} value={form.evidenceNote} onChange={e=>setForm(v=>({...v,evidenceNote:e.target.value}))} placeholder="Paste the original email or message..."/></div>
-          <div style={{gridColumn:"span 2"}}><Lbl>Contradicts (hold Ctrl/Cmd for multiple)</Lbl><select multiple style={{...inp,height:68}} value={form.conflictsWith} onChange={e=>setForm(v=>({...v,conflictsWith:Array.from(e.target.selectedOptions,o=>o.value)}))}>{changes.filter(c=>c.id!==editId).map(c=><option key={c.id} value={c.id}>{c.title.slice(0,65)}</option>)}</select></div>
+          <div style={{gridColumn:"span 2"}}>
+            <Lbl>Conflicts with</Lbl>
+            <div style={{fontSize:11,color:T.muted,marginBottom:8}}>Check any requests this one contradicts or pulls against</div>
+            <div style={{background:T.bg,border:"1px solid "+T.border,borderRadius:6,maxHeight:160,overflowY:"auto"}}>
+              {changes.filter(c=>c.id!==editId).length===0
+                ?<div style={{padding:"12px 14px",fontSize:11,color:T.muted}}>No other requests yet.</div>
+                :changes.filter(c=>c.id!==editId).map((c,i,arr)=>{
+                  const checked=(form.conflictsWith||[]).includes(c.id);
+                  return (
+                    <label key={c.id} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 14px",cursor:"pointer",borderBottom:i<arr.length-1?"1px solid "+T.borderSub:"none",background:checked?T.dangerBg:"transparent"}}>
+                      <input type="checkbox" checked={checked} onChange={e=>{
+                        const cur=form.conflictsWith||[];
+                        setForm(v=>({...v,conflictsWith:e.target.checked?[...cur,c.id]:cur.filter(id=>id!==c.id)}));
+                      }} style={{marginTop:2,accentColor:T.danger,flexShrink:0,cursor:"pointer"}}/>
+                      <div>
+                        <div style={{fontSize:12,fontWeight:checked?700:400,color:checked?T.danger:T.sub,lineHeight:1.5}}>{c.title}</div>
+                        <div style={{fontSize:10,color:T.muted,marginTop:2}}>{c.status} · {c.category}</div>
+                      </div>
+                    </label>
+                  );
+                })
+              }
+            </div>
+          </div>
         </div>
         <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:18}}>
           <GhostBtn onClick={onClose}>Cancel</GhostBtn>
