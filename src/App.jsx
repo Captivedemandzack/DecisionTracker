@@ -276,11 +276,38 @@ export default function App() {
   const [fStat,    setFS]    = useState("all");
   const [fVend,    setFV]    = useState("all");
   const [search,   setSrch]  = useState("");
+  const [brief,    setBrief] = useState(null);
+  const [briefLoading, setBriefLoading] = useState(false);
 
   // ── Persist to localStorage whenever data changes ──────────────
   useEffect(() => saveLS(LS_CHANGES,  changes),  [changes]);
   useEffect(() => saveLS(LS_VENDORS,  vendors),  [vendors]);
   useEffect(() => saveLS(LS_PROJECTS, projects), [projects]);
+
+  // ── Strategic brief — fetch when Overview tab loads ────────────
+  useEffect(() => {
+    if (tab !== "overview") return;
+    const pending = changes.filter(c => ["suggested","approved","in-progress"].includes(c.status));
+    if (pending.length === 0) { setBrief(null); return; }
+    setBriefLoading(true);
+    setBrief(null);
+    const list = pending.map((c, i) =>
+      `${i+1}. [${c.status}] ${c.title}${c.description ? ` — ${c.description}` : ""} (category: ${c.category}, priority: ${c.priority})`
+    ).join("\n");
+    fetch("/api/claude", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 250,
+        messages: [{ role: "user", content: `You are a strategic advisor reviewing open change requests for a web project. Write exactly 2-3 sentences that: identify any contradictions or tensions between requests, surface what the underlying goal appears to be, and flag anything that should be decided before work starts. Be direct and specific — no preamble, no bullet points.\n\nOpen requests:\n${list}` }],
+      }),
+    })
+      .then(r => r.json())
+      .then(d => { const t = d.content?.[0]?.text; if (t) setBrief(t); })
+      .catch(() => {})
+      .finally(() => setBriefLoading(false));
+  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const blankForm = {id:null,project:PROJECTS_DEFAULT[0].id,title:"",description:"",suggestedBy:"",approvedBy:"",implementedBy:"",status:"suggested",category:"Other",dateSubmitted:new Date().toISOString().slice(0,10),dateImplemented:"",evidenceNote:"",conflictsWith:[],priority:"medium"};
   const [form, setForm] = useState(blankForm);
@@ -348,6 +375,25 @@ export default function App() {
     const goTo=id=>{setTab("log");setExp(id);};
     return (
       <div>
+        {(brief || briefLoading) && (
+          <div style={{background:T.limeBg,border:"1px solid "+T.limeBdr,borderRadius:8,padding:"14px 16px",marginBottom:20,display:"flex",gap:12,alignItems:"flex-start"}}>
+            <div style={{marginTop:1,flexShrink:0}}>
+              {briefLoading
+                ? <Loader2 size={14} color={T.lime} style={{animation:"spin 1s linear infinite"}}/>
+                : <FileText size={14} color={T.lime}/>}
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:10,color:T.lime,marginBottom:8,textTransform:"uppercase",letterSpacing:"0.08em"}}>Strategic Brief</div>
+              {briefLoading
+                ? <div style={{display:"flex",flexDirection:"column",gap:7}}>
+                    {[92,76,55].map(w=>(
+                      <div key={w} style={{height:9,borderRadius:4,background:T.limeBdr,width:w+"%"}}/>
+                    ))}
+                  </div>
+                : <div style={{fontSize:12,color:T.text,lineHeight:1.75,fontFamily:F}}>{brief}</div>}
+            </div>
+          </div>
+        )}
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:24}}>
           {projects.map(proj=>{
             const pc=changes.filter(c=>c.project===proj.id);
