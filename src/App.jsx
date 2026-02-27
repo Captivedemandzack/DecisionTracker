@@ -379,7 +379,17 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
   const open = sortConflictsGrouped([...changes].filter(c => OPEN_STATUSES.includes(c.status)));
   const done = [...changes].filter(c => DONE_STATUSES.includes(c.status)).sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
 
-  const Card = ({ c, last }) => {
+  // Separate open requests into ones with conflicts vs ones without.
+  const openConflicts = [];
+  const openNormal = [];
+
+  open.forEach(c => {
+    const hasC = (c.conflictsWith && c.conflictsWith.length > 0) || (referencedBy[c.id] && referencedBy[c.id].length > 0);
+    if (hasC) openConflicts.push(c);
+    else openNormal.push(c);
+  });
+
+  const Card = ({ c, last, embedded }) => {
     const isExp = expanded === c.id;
     const proj = pMap[c.project];
     const requester = vMap[c.suggestedBy];
@@ -388,41 +398,48 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
     const conflictTitles = allConflictIds.map(cid => changes.find(x => x.id === cid)?.title).filter(Boolean);
 
     return (
-      <div style={{ borderBottom: last ? "none" : "1px solid " + T.borderSub }}>
-        <div onClick={() => setExp(isExp ? null : c.id)} style={{ padding: "16px 0", cursor: "pointer", display: "flex", alignItems: "flex-start", gap: 12 }}>
-          {/* conflict stripe */}
-          <div style={{ width: 3, borderRadius: 2, alignSelf: "stretch", background: hasConflict ? T.danger : OPEN_STATUSES.includes(c.status) ? T.border : "transparent", flexShrink: 0 }} />
+      <div style={{ borderBottom: last ? "none" : "1px solid " + (embedded ? T.dangerBdr : T.borderSub) }}>
+        <div onClick={() => setExp(isExp ? null : c.id)} style={{ padding: embedded ? "12px 14px" : "16px 0", cursor: "pointer", display: "flex", alignItems: "flex-start", gap: 12 }}>
+          {/* left accent stripe */}
+          {!embedded && <div style={{ width: 3, borderRadius: 2, alignSelf: "stretch", background: hasConflict ? T.danger : OPEN_STATUSES.includes(c.status) ? T.border : "transparent", flexShrink: 0 }} />}
+
           <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Tags on top for mobile wrapping */}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
-              {proj && <PTag name={proj.name} />}
-              <Badge status={c.status} />
-              {requester && <span style={{ fontSize: 11, color: T.muted }}>Requested by {requester.name}</span>}
-              <span style={{ fontSize: 11, color: T.muted }}>Submitted {fmt(c.dateSubmitted)}</span>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
-              {hasConflict && <AlertTriangle size={14} color={T.danger} style={{ flexShrink: 0, marginTop: 2 }} />}
-              <span style={{ fontWeight: 700, fontSize: 14, color: hasConflict ? T.danger : T.text, lineHeight: 1.4, flex: 1 }}>{c.title}</span>
-            </div>
-
-            {/* Conflict notice — always visible, flex wrap enabled */}
-            {hasConflict && conflictTitles.length > 0 && (
-              <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: 8, background: T.dangerBg, border: "1px solid " + T.dangerBdr, borderRadius: 6, padding: "10px 14px", width: "100%", boxSizing: "border-box" }}>
-                <AlertTriangle size={12} color={T.danger} style={{ marginTop: 2, flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: T.danger, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Conflicts with</div>
-                  {conflictTitles.map((t, i) => <div key={i} style={{ fontSize: 12, color: T.danger, lineHeight: 1.5, marginBottom: i < conflictTitles.length - 1 ? 4 : 0 }}>"{t}"</div>)}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, justifyContent: "space-between" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                {/* tags */}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 6 }}>
+                  {proj && <PTag name={proj.name} />}
+                  <Badge status={c.status} />
+                  <div style={{ fontSize: 11, color: T.muted, marginLeft: 2 }}>
+                    Requested by {requester ? requester.name : "unknown"} <span style={{ opacity: 0.5, margin: "0 4px" }}>•</span> Submitted {fmt(c.dateSubmitted)}
+                  </div>
                 </div>
+
+                {/* title */}
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontWeight: 700, fontSize: 14, color: T.text, lineHeight: 1.4, flex: 1 }}>{c.title}</span>
+                </div>
+
+                {/* inline conflict notice */}
+                {embedded && conflictTitles.length > 0 && (
+                  <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: 8, background: "rgba(255,100,100,0.06)", border: "1px solid " + T.dangerBdr, borderRadius: 4, padding: "8px 12px", width: "100%", boxSizing: "border-box" }}>
+                    <AlertTriangle size={12} color={T.danger} style={{ marginTop: 2, flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: T.danger, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Conflicts with</div>
+                      {conflictTitles.map((t, i) => <div key={i} style={{ fontSize: 11, color: T.danger, lineHeight: 1.5 }}>"{t}"</div>)}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-            {isExp ? <ChevronUp size={16} color={T.muted} /> : <ChevronDown size={16} color={T.muted} />}
+
+              <div style={{ display: "flex", alignItems: "center", flexShrink: 0, marginTop: 4 }}>
+                {isExp ? <ChevronUp size={16} color={embedded ? T.danger : T.muted} /> : <ChevronDown size={16} color={embedded ? T.danger : T.muted} />}
+              </div>
+            </div>
           </div>
         </div>
         {isExp && (
-          <div style={{ paddingBottom: 18, paddingLeft: 15, paddingRight: 4 }} onClick={e => e.stopPropagation()}>
+          <div style={{ paddingBottom: 18, paddingLeft: embedded ? 14 : 15, paddingRight: 4, borderTop: embedded && c.description ? "1px solid " + T.dangerBdr + "44" : "none", paddingTop: embedded && c.description ? 12 : 0 }} onClick={e => e.stopPropagation()}>
             {c.description && <div style={{ fontSize: 13, color: T.sub, lineHeight: 1.8 }}>{c.description}</div>}
           </div>
         )}
@@ -443,12 +460,10 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
             <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Open</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: T.warn, lineHeight: 1 }}>{open.length}</div>
           </div>
-          {conflictSet.size > 0 && (
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Conflicts</div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: T.danger, lineHeight: 1 }}>{conflictSet.size}</div>
-            </div>
-          )}
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Completed</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: T.success, lineHeight: 1 }}>{done.length}</div>
+          </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Total</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{changes.length}</div>
@@ -472,13 +487,26 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
             <div style={{ fontSize: 17, fontWeight: 800, color: T.text, marginBottom: 4 }}>Open Requests</div>
             <div style={{ fontSize: 12, color: T.muted }}>What has been asked for and hasn't been built yet — newest first</div>
           </div>
-          {open.length === 0 ? (
-            <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 8, padding: 32, textAlign: "center", color: T.muted, fontSize: 13 }}>No open requests.</div>
-          ) : (
-            <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 10, padding: "0 24px" }}>
-              {open.map((c, i) => <Card key={c.id} c={c} last={i === open.length - 1} />)}
+
+          {openConflicts.length > 0 && (
+            <div style={{ background: T.dangerBg, border: "1px solid " + T.dangerBdr, borderRadius: 10, marginBottom: 16, overflow: "hidden" }}>
+              <div style={{ padding: "14px 16px", borderBottom: "1px solid " + T.dangerBdr, display: "flex", alignItems: "center", gap: 8, background: "rgba(255,100,100,0.05)" }}>
+                <AlertTriangle size={15} color={T.danger} />
+                <span style={{ fontWeight: 700, fontSize: 13, color: T.danger }}>These requests conflict with each other</span>
+              </div>
+              <div style={{ padding: "0 10px" }}>
+                {openConflicts.map((c, i) => <Card key={c.id} c={c} last={i === openConflicts.length - 1} embedded />)}
+              </div>
             </div>
           )}
+
+          {openNormal.length === 0 && openConflicts.length === 0 ? (
+            <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 8, padding: 32, textAlign: "center", color: T.muted, fontSize: 13 }}>No open requests.</div>
+          ) : openNormal.length > 0 ? (
+            <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 10, padding: "0 24px" }}>
+              {openNormal.map((c, i) => <Card key={c.id} c={c} last={i === openNormal.length - 1} />)}
+            </div>
+          ) : null}
         </div>
 
         {/* Completed */}
