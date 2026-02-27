@@ -88,7 +88,7 @@ const SEED = [
 // Bump SEED_VERSION whenever SEED, VENDORS_DEFAULT, or PROJECTS_DEFAULT
 // changes. On load, if the stored version doesn't match, localStorage is
 // wiped and the fresh seed data is used instead.
-const SEED_VERSION = "3";
+const SEED_VERSION = "4";
 
 const LS = { changes:"cd_changes", vendors:"cd_vendors", projects:"cd_projects", brief:"cd_brief", seedVer:"cd_seed_version" };
 function loadLS(key, fallback) {
@@ -277,7 +277,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
 
   const Card = ({c, last}) => {
     const isExp = expanded===c.id;
-    const hasConflict = conflictSet.has(c.id);
+    const hasConflict = (c.conflictsWith?.length ?? 0) > 0;
     const proj = pMap[c.project];
     const conflictTitles = (c.conflictsWith||[]).map(cid=>changes.find(x=>x.id===cid)?.title).filter(Boolean);
 
