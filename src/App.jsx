@@ -464,27 +464,46 @@ export default function App() {
   // deploy), immediately push whatever is in localStorage so the client
   // view always reflects the admin's current data.
   useEffect(() => {
+    if (isClient) {
+      // For the client view, try to load data from the URL hash first
+      try {
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+          const decoded = JSON.parse(decodeURIComponent(escape(atob(hash))));
+          if (decoded.changes) setChgs(decoded.changes);
+          if (decoded.vendors) setVends(decoded.vendors);
+          if (decoded.projects) setProjs(decoded.projects);
+          if (typeof decoded.brief === "string") setBrief(decoded.brief);
+          return; // Skip fetching from cloud if hash data exists and is valid
+        }
+      } catch (e) {
+        console.error("Failed to parse client data from URL", e);
+      }
+    }
+
     fetch(`/api/data?_t=${Date.now()}`, { cache: "no-store" })
       .then(r => r.json())
       .then(data => {
         if (!data) {
           // Cloud is empty — seed it from the current localStorage state.
-          pushToCloud({
-            changes: changesRef.current,
-            vendors: vendorsRef.current,
-            projects: projectsRef.current,
-            brief: briefRef.current,
-          });
+          if (!isClient) {
+            pushToCloud({
+              changes: changesRef.current,
+              vendors: vendorsRef.current,
+              projects: projectsRef.current,
+              brief: briefRef.current,
+            });
+          }
           return;
         }
-        if (data.changes) { setChgs(data.changes); saveLS(LS.changes, data.changes); }
-        if (data.vendors) { setVends(data.vendors); saveLS(LS.vendors, data.vendors); }
-        if (data.projects) { setProjs(data.projects); saveLS(LS.projects, data.projects); }
-        if (typeof data.brief === "string") { setBrief(data.brief); saveLS(LS.brief, data.brief); }
+        if (data.changes) { setChgs(data.changes); if (!isClient) saveLS(LS.changes, data.changes); }
+        if (data.vendors) { setVends(data.vendors); if (!isClient) saveLS(LS.vendors, data.vendors); }
+        if (data.projects) { setProjs(data.projects); if (!isClient) saveLS(LS.projects, data.projects); }
+        if (typeof data.brief === "string") { setBrief(data.brief); if (!isClient) saveLS(LS.brief, data.brief); }
       })
       .catch(() => { })
       .finally(() => { cloudReady.current = true; });
-  }, []);
+  }, [isClient]);
 
   // Whenever data changes, persist to cloud (debounced 1.5 s)
   useEffect(() => {
@@ -550,7 +569,8 @@ export default function App() {
       setBriefEdit(false);
     }
     pushToCloud({ changes, vendors, projects, brief: currentBrief });
-    navigator.clipboard.writeText(window.location.origin + "?view=client&t=" + Date.now()).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ changes, vendors, projects, brief: currentBrief }))));
+    navigator.clipboard.writeText(window.location.origin + "?view=client#" + payload).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   }
 
   const totalOpen = changes.filter(c => OPEN_STATUSES.includes(c.status)).length;
@@ -589,7 +609,8 @@ export default function App() {
                   setBriefEdit(false);
                 }
                 pushToCloud({ changes, vendors, projects, brief: currentBrief });
-                window.open("?view=client&t=" + Date.now(), "_blank");
+                const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ changes, vendors, projects, brief: currentBrief }))));
+                window.open("?view=client#" + payload, "_blank");
               }} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 600, color: T.sub, fontFamily: F, textDecoration: "none" }}>
                 <Eye size={11} />Preview
               </a>
