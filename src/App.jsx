@@ -252,13 +252,13 @@ function FormModal({ editId, form, setForm, onSave, onClose, projects, vendors, 
   const inp = { background: T.raised, border: "1px solid " + T.border, color: T.text, borderRadius: 5, padding: "9px 11px", fontFamily: F, fontSize: 12, outline: "none", width: "100%", boxSizing: "border-box" };
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 300, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: "40px 20px", overflowY: "auto" }} onClick={onClose}>
-      <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 10, padding: 26, width: "100%", maxWidth: 580, boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }} onClick={e => e.stopPropagation()}>
+      <div className="form-modal-inner" style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 10, padding: 26, width: "100%", maxWidth: 580, boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div style={{ fontWeight: 800, fontSize: 15, color: T.text }}>{editId ? "Edit entry" : "Log a change"}</div>
           <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, padding: 0 }}><X size={16} /></button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <div style={{ gridColumn: "span 2" }}><Lbl>Title *</Lbl><input style={inp} value={form.title} onChange={e => setForm(v => ({ ...v, title: e.target.value }))} placeholder="What was requested?" /></div>
+        <div className="form-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div className="form-col-span-2" style={{ gridColumn: "span 2" }}><Lbl>Title *</Lbl><input style={inp} value={form.title} onChange={e => setForm(v => ({ ...v, title: e.target.value }))} placeholder="What was requested?" /></div>
           <div><Lbl>Project</Lbl><select style={inp} value={form.project} onChange={e => setForm(v => ({ ...v, project: e.target.value }))}>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></div>
           <div><Lbl>Category</Lbl><select style={inp} value={form.category} onChange={e => setForm(v => ({ ...v, category: e.target.value }))}>{CATS.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
           <div><Lbl>Requested by</Lbl><select style={inp} value={form.suggestedBy} onChange={e => setForm(v => ({ ...v, suggestedBy: e.target.value }))}><option value="">Select...</option>{vendors.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}</select></div>
@@ -267,9 +267,9 @@ function FormModal({ editId, form, setForm, onSave, onClose, projects, vendors, 
           <div><Lbl>Status</Lbl><select style={inp} value={form.status} onChange={e => setForm(v => ({ ...v, status: e.target.value }))}>{Object.entries(STATUSES).map(([k, s]) => <option key={k} value={k}>{s.label}</option>)}</select></div>
           <div><Lbl>Date submitted</Lbl><input type="date" style={inp} value={form.dateSubmitted} onChange={e => setForm(v => ({ ...v, dateSubmitted: e.target.value }))} /></div>
           <div><Lbl>Date completed</Lbl><input type="date" style={inp} value={form.dateImplemented || ""} onChange={e => setForm(v => ({ ...v, dateImplemented: e.target.value }))} /></div>
-          <div style={{ gridColumn: "span 2" }}><Lbl>What was asked for</Lbl><textarea style={{ ...inp, minHeight: 64, resize: "vertical" }} value={form.description} onChange={e => setForm(v => ({ ...v, description: e.target.value }))} placeholder="Full context of the request..." /></div>
-          <div style={{ gridColumn: "span 2" }}><Lbl>Evidence</Lbl><textarea style={{ ...inp, minHeight: 60, resize: "vertical" }} value={form.evidenceNote} onChange={e => setForm(v => ({ ...v, evidenceNote: e.target.value }))} placeholder="Paste the original email or message..." /></div>
-          <div style={{ gridColumn: "span 2" }}>
+          <div className="form-col-span-2" style={{ gridColumn: "span 2" }}><Lbl>What was asked for</Lbl><textarea style={{ ...inp, minHeight: 64, resize: "vertical" }} value={form.description} onChange={e => setForm(v => ({ ...v, description: e.target.value }))} placeholder="Full context of the request..." /></div>
+          <div className="form-col-span-2" style={{ gridColumn: "span 2" }}><Lbl>Evidence</Lbl><textarea style={{ ...inp, minHeight: 60, resize: "vertical" }} value={form.evidenceNote} onChange={e => setForm(v => ({ ...v, evidenceNote: e.target.value }))} placeholder="Paste the original email or message..." /></div>
+          <div className="form-col-span-2" style={{ gridColumn: "span 2" }}>
             <Lbl>Conflicts with</Lbl>
             <div style={{ fontSize: 11, color: T.muted, marginBottom: 8 }}>Check any requests this one contradicts or pulls against</div>
             <div style={{ background: T.bg, border: "1px solid " + T.border, borderRadius: 6, maxHeight: 160, overflowY: "auto" }}>
@@ -433,12 +433,12 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
   return (
     <div style={{ fontFamily: F, background: T.bg, color: T.text, minHeight: "100vh", fontSize: 13, lineHeight: 1.5 }}>
       {/* Header */}
-      <div style={{ borderBottom: "1px solid " + T.border, padding: "24px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className="client-header" style={{ borderBottom: "1px solid " + T.border, padding: "24px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>Request Overview</div>
         </div>
-        <div style={{ display: "flex", gap: 20 }}>
+        <div className="client-stats" style={{ display: "flex", gap: 20 }}>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Open</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: T.warn, lineHeight: 1 }}>{open.length}</div>
@@ -456,7 +456,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
         </div>
       </div>
 
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "36px 40px" }}>
+      <div className="client-container" style={{ maxWidth: 800, margin: "0 auto", padding: "36px 40px" }}>
 
         {/* Note from Captive Demand */}
         {brief && brief.trim() && (
@@ -691,7 +691,7 @@ export default function App() {
               <div style={{ fontSize: 11, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em" }}>Client Note</div>
               <div style={{ fontSize: 11, color: T.muted, marginTop: 3 }}>This appears at the top of the client view. Write whatever you want them to read first.</div>
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className="btn-group" style={{ display: "flex", gap: 8 }}>
               <button onClick={copyLink} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 600, color: copied ? T.success : T.sub, fontFamily: F }}>
                 {copied ? <Check size={11} /> : <Copy size={11} />}{copied ? "Copied!" : "Copy client link"}
               </button>
@@ -736,7 +736,7 @@ export default function App() {
         </div>
 
         {/* Project cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 24 }}>
+        <div className="grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12, marginBottom: 24 }}>
           {projects.map(proj => {
             const pc = changes.filter(c => c.project === proj.id);
             const done = pc.filter(c => DONE_STATUSES.includes(c.status)).length;
@@ -765,7 +765,7 @@ export default function App() {
               <AlertTriangle size={14} color={T.danger} />
               <span style={{ fontWeight: 700, fontSize: 12, color: T.danger }}>These requests conflict with each other</span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {flags.map(c => (
                 <div key={c.id} onClick={() => goTo(c.id)} style={{ background: "#1a0d0d", border: "1px solid " + T.dangerBdr, borderRadius: 6, padding: "10px 12px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
                   <div><div style={{ fontWeight: 600, fontSize: 11, color: T.text, marginBottom: 4 }}>{c.title.length > 52 ? c.title.slice(0, 52) + "..." : c.title}</div><Chip name={vMap[c.suggestedBy]?.name} /></div>
@@ -776,7 +776,7 @@ export default function App() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 8, padding: 18 }}>
             <div style={{ fontWeight: 700, fontSize: 12, color: T.text, marginBottom: 2 }}>Waiting for action</div>
             <div style={{ fontSize: 11, color: T.muted, marginBottom: 14 }}>Not built yet</div>
@@ -825,11 +825,11 @@ export default function App() {
                   </div>
                   {isOpen && (
                     <div style={{ padding: "16px 20px", borderTop: "1px solid " + T.borderSub, background: T.bg }} onClick={e => e.stopPropagation()}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 14 }}>{[["Requested by", c.suggestedBy], ["Approved by", c.approvedBy], ["Built by", c.implementedBy]].map(([lbl, vid]) => (<div key={lbl}><Lbl>{lbl}</Lbl><Chip name={vMap[vid]?.name} /></div>))}</div>
+                      <div className="grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginBottom: 14 }}>{[["Requested by", c.suggestedBy], ["Approved by", c.approvedBy], ["Built by", c.implementedBy]].map(([lbl, vid]) => (<div key={lbl}><Lbl>{lbl}</Lbl><Chip name={vMap[vid]?.name} /></div>))}</div>
                       {c.description && <div style={{ marginBottom: 12 }}><Lbl>What was asked</Lbl><div style={{ fontSize: 12, color: T.sub, lineHeight: 1.7 }}>{c.description}</div></div>}
                       {c.evidenceNote && (<div style={{ background: T.raised, border: "1px solid " + T.border, borderRadius: 6, padding: "10px 12px", marginBottom: 12 }}><div style={{ display: "flex", gap: 5, alignItems: "center", marginBottom: 5 }}><FileText size={10} color={T.muted} /><Lbl>Evidence</Lbl></div><div style={{ fontSize: 11, color: T.muted, lineHeight: 1.7, fontStyle: "italic" }}>{c.evidenceNote}</div></div>)}
                       {c.conflictsWith?.length > 0 && (<div style={{ background: T.dangerBg, border: "1px solid " + T.dangerBdr, borderRadius: 5, padding: "9px 11px", marginBottom: 12 }}><div style={{ display: "flex", gap: 5, alignItems: "center", color: T.danger, fontSize: 11, fontWeight: 600 }}><AlertTriangle size={11} />Contradicts: {c.conflictsWith.map(cid => { const f = changes.find(x => x.id === cid); return f ? f.title.slice(0, 45) + "..." : "" }).filter(Boolean).join(", ")}</div></div>)}
-                      <div style={{ display: "flex", gap: 7 }}><GhostBtn onClick={() => openEdit(c)}><Pencil size={10} />Edit</GhostBtn><GhostBtn danger onClick={() => del(c.id)}><Trash2 size={10} />Remove</GhostBtn></div>
+                      <div className="btn-group" style={{ display: "flex", gap: 7 }}><GhostBtn onClick={() => openEdit(c)}><Pencil size={10} />Edit</GhostBtn><GhostBtn danger onClick={() => del(c.id)}><Trash2 size={10} />Remove</GhostBtn></div>
                     </div>
                   )}
                 </div>
@@ -852,7 +852,7 @@ export default function App() {
         return (
           <div key={type} style={{ marginBottom: 28 }}>
             <div style={{ marginBottom: 12 }}><span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 3, background: tc.c + "22", color: tc.c, border: "1px solid " + tc.c + "44", textTransform: "uppercase", letterSpacing: "0.08em" }}>{tc.label}</span></div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div className="grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {group.map(v => {
                 const req = changes.filter(ch => ch.suggestedBy === v.id).length;
                 const app = changes.filter(ch => ch.approvedBy === v.id).length;
@@ -863,7 +863,7 @@ export default function App() {
                     <div style={{ fontWeight: 700, fontSize: 13, color: T.text, marginBottom: 2 }}>{v.name}</div>
                     <div style={{ fontSize: 11, color: T.muted, marginBottom: 10 }}>{v.role}</div>
                     {pids.length > 0 && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>{pids.map(pid => { const p = pMap[pid]; return p ? <PTag key={pid} name={p.name} /> : null; })}</div>}
-                    <div style={{ display: "flex", gap: 16, paddingTop: 10, borderTop: "1px solid " + T.borderSub }}>
+                    <div className="stakeholder-stats" style={{ display: "flex", gap: 16, paddingTop: 10, borderTop: "1px solid " + T.borderSub }}>
                       {[["Requested", req, T.warn], ["Approved", app, T.info], ["Built", blt, T.success]].map(([lbl, num, col]) => (<div key={lbl}><div style={{ fontSize: 9, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>{lbl}</div><div style={{ fontSize: 20, fontWeight: 800, color: num > 0 ? col : T.muted }}>{num}</div></div>))}
                     </div>
                   </div>
@@ -881,28 +881,53 @@ export default function App() {
   const SUBS = { overview: "All projects at a glance", log: "Every request and decision — your paper trail", stakeholders: "Everyone involved and what they have contributed" };
 
   return (
-    <div style={{ fontFamily: F, background: T.bg, color: T.text, minHeight: "100vh", display: "flex", fontSize: 13, lineHeight: 1.5 }}>
-      <div style={{ width: 206, background: T.surface, borderRight: "1px solid " + T.border, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 50 }}>
+    <div className="app-layout" style={{ fontFamily: F, background: T.bg, color: T.text, minHeight: "100vh", display: "flex", fontSize: 13, lineHeight: 1.5 }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .app-layout { flex-direction: column !important; }
+          .admin-sidebar { width: 100% !important; height: auto !important; position: static !important; border-right: none !important; border-bottom: 1px solid #40424D !important; display: block !important; }
+          .admin-sidebar-nav { display: flex !important; flex-direction: row !important; overflow-x: auto !important; padding: 12px 14px !important; border-top: 1px solid #2A2A32; border-bottom: 1px solid #2A2A32; }
+          .admin-sidebar-nav button { width: auto !important; flex: 0 0 auto !important; margin: 0 4px !important; white-space: nowrap !important; }
+          .admin-sidebar-actions { display: flex !important; flex-direction: row !important; }
+          .admin-sidebar-actions button { flex: 1; }
+          .admin-main { margin-left: 0 !important; max-width: 100% !important; padding: 20px 16px !important; }
+          
+          .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+          .btn-group { flex-wrap: wrap !important; }
+          
+          .client-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; padding: 20px 16px !important;}
+          .client-stats { flex-wrap: wrap !important; justify-content: flex-start !important; gap: 16px !important;}
+          .client-stats > div { text-align: left !important; flex: 1 1 30% !important; }
+          .client-container { padding: 20px 16px !important; }
+          
+          .form-grid { grid-template-columns: 1fr !important; }
+          .form-col-span-2 { grid-column: span 1 !important; }
+          .form-modal-inner { padding: 20px 16px !important; }
+          
+          .stakeholder-stats { flex-wrap: wrap !important; gap: 12px !important; }
+        }
+      `}</style>
+      <div className="admin-sidebar" style={{ width: 206, background: T.surface, borderRight: "1px solid " + T.border, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 50 }}>
         <div style={{ padding: "20px 16px 14px", borderBottom: "1px solid " + T.border }}>
           <div style={{ fontSize: 13, fontWeight: 800, color: T.primary }}>Captive Demand</div>
           <div style={{ fontSize: 9, color: T.muted, marginTop: 3, letterSpacing: "0.07em", textTransform: "uppercase" }}>Change Tracker</div>
         </div>
         <div style={{ padding: "10px 14px", borderBottom: "1px solid " + T.borderSub, display: "flex", gap: 14 }}>
-          {[["Open", totalOpen, T.warn], ["Flags", totalConf, totalConf > 0 ? T.danger : T.muted], ["Total", changes.length, "#ffffff"]].map(([lbl, num, col]) => (<div key={lbl}><div style={{ fontSize: 8, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em" }}>{lbl}</div><div style={{ fontSize: 17, fontWeight: 800, color: col }}>{num}</div></div>))}
+          {[["Open", totalOpen, T.warn], ["Flags", totalConf, totalConf > 0 ? T.danger : T.muted], ["Total", changes.length, "#ffffff"]].map(([lbl, num, col]) => (<div key={lbl} style={{ flex: 1 }}><div style={{ fontSize: 8, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em" }}>{lbl}</div><div style={{ fontSize: 17, fontWeight: 800, color: col }}>{num}</div></div>))}
         </div>
-        <nav style={{ padding: "6px 0", flex: 1 }}>
+        <nav className="admin-sidebar-nav" style={{ padding: "6px 0", flex: 1, display: "flex", flexDirection: "column" }}>
           {TABS.map(({ id, label }) => {
             const active = tab === id;
             return (<button key={id} onClick={() => setTab(id)} style={{ display: "flex", alignItems: "center", width: "calc(100% - 12px)", margin: "1px 6px", padding: "9px 10px", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: active ? 700 : 400, color: active ? T.primary : T.muted, background: active ? T.primaryBg : "transparent", textAlign: "left", fontFamily: F }}>{label}{id === "log" && conflictSet.size > 0 && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 700, background: T.dangerBg, color: T.danger, border: "1px solid " + T.dangerBdr, borderRadius: 3, padding: "1px 5px" }}>{conflictSet.size}</span>}</button>);
           })}
         </nav>
-        <div style={{ padding: "10px", borderTop: "1px solid " + T.border, display: "flex", flexDirection: "column", gap: 6 }}>
-          <button onClick={() => setImp(true)} style={{ display: "flex", alignItems: "center", gap: 7, width: "100%", padding: "8px 10px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 500, color: T.sub, fontFamily: F }}><Mail size={12} color={T.primary} />Import from email</button>
+        <div className="admin-sidebar-actions" style={{ padding: "10px", borderTop: "1px solid " + T.border, display: "flex", flexDirection: "column", gap: 6 }}>
+          <button onClick={() => setImp(true)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, width: "100%", padding: "8px 10px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 500, color: T.sub, fontFamily: F }}><Mail size={12} color={T.primary} />Import from email</button>
           <button onClick={openAdd} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, width: "100%", padding: "8px 10px", borderRadius: 5, border: "none", background: T.primary, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#fff", fontFamily: F }}><Plus size={12} />Log change</button>
         </div>
       </div>
 
-      <div style={{ marginLeft: 206, flex: 1, padding: "24px 28px", minHeight: "100vh", maxWidth: "calc(100vw - 206px)", boxSizing: "border-box" }}>
+      <div className="admin-main" style={{ marginLeft: 206, flex: 1, padding: "24px 28px", minHeight: "100vh", maxWidth: "calc(100vw - 206px)", boxSizing: "border-box" }}>
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 19, fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>{TITLES[tab]}</div>
           <div style={{ fontSize: 11, color: T.muted, marginTop: 3 }}>{SUBS[tab]}</div>
