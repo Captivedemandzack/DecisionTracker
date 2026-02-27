@@ -752,9 +752,9 @@ export default function App() {
           <div style={{fontSize:19,fontWeight:800,color:T.text,letterSpacing:"-0.02em"}}>{TITLES[tab]}</div>
           <div style={{fontSize:11,color:T.muted,marginTop:3}}>{SUBS[tab]}</div>
         </div>
-        {tab==="overview"    &&<Overview/>}
-        {tab==="log"         &&<Log/>}
-        {tab==="stakeholders"&&<Stakeholders/>}
+        {tab==="overview"    &&Overview()}
+        {tab==="log"         &&Log()}
+        {tab==="stakeholders"&&Stakeholders()}
       </div>
 
       {showForm&&<FormModal editId={editId} form={form} setForm={setForm} onSave={save} onClose={()=>setSF(false)} projects={projects} vendors={vendors} changes={changes}/>}
