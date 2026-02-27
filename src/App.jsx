@@ -423,6 +423,7 @@ export default function App() {
   const [search,   setSrch] = useState("");
   const [brief,    setBrief]= useState(()=>loadLS(LS.brief,""));
   const [briefEdit,setBriefEdit]=useState(false);
+  const [briefDraft,setBriefDraft]=useState("");
   const [copied,   setCopied]=useState(false);
 
   useEffect(()=>saveLS(LS.changes,  changes),  [changes]);
@@ -559,19 +560,19 @@ export default function App() {
             <div>
               <textarea
                 autoFocus
-                value={brief}
-                onChange={e=>setBrief(e.target.value)}
+                value={briefDraft}
+                onChange={e=>setBriefDraft(e.target.value)}
                 placeholder={"Write a note to your client here. For example:\n\n\"Before we kick off the next sprint, we want to flag something. You've asked us to build a drop-off tracking workflow and also to remove the Cal.com redirect — but these two things depend on each other. Let's get on a call and decide which direction we're going first.\""}
                 rows={6}
-                style={{background:T.bg,border:"1px solid "+T.limeBdr,color:T.text,borderRadius:6,padding:"12px 14px",fontFamily:F,fontSize:13,outline:"none",width:"100%",boxSizing:"border-box",resize:"vertical",lineHeight:1.8,color:T.sub}}
+                style={{background:T.bg,border:"1px solid "+T.limeBdr,color:T.sub,borderRadius:6,padding:"12px 14px",fontFamily:F,fontSize:13,outline:"none",width:"100%",boxSizing:"border-box",resize:"vertical",lineHeight:1.8}}
               />
               <div style={{display:"flex",justifyContent:"flex-end",marginTop:10,gap:8}}>
-                <GhostBtn onClick={()=>setBriefEdit(false)}>Done</GhostBtn>
+                <GhostBtn onClick={()=>{setBrief(briefDraft);setBriefEdit(false);}}>Done</GhostBtn>
               </div>
             </div>
           ) : (
             <div
-              onClick={()=>setBriefEdit(true)}
+              onClick={()=>{setBriefDraft(brief);setBriefEdit(true);}}
               style={{minHeight:52,padding:"10px 14px",background:T.bg,border:"1px solid "+(brief?T.border:T.borderSub),borderRadius:6,cursor:"text",fontSize:13,color:brief?T.sub:T.muted,lineHeight:1.8,whiteSpace:"pre-wrap"}}
             >
               {brief||"Click to write a note for your client..."}
