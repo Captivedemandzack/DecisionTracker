@@ -88,7 +88,7 @@ const SEED = [
 // Bump SEED_VERSION whenever SEED, VENDORS_DEFAULT, or PROJECTS_DEFAULT
 // changes. On load, if the stored version doesn't match, localStorage is
 // wiped and the fresh seed data is used instead.
-const SEED_VERSION = "4";
+const SEED_VERSION = "5";
 
 const LS = { changes:"cd_changes", vendors:"cd_vendors", projects:"cd_projects", brief:"cd_brief", seedVer:"cd_seed_version" };
 function loadLS(key, fallback) {
@@ -271,15 +271,28 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
   const [showCompleted, setShowCompleted] = useState(false);
   const [expanded, setExp] = useState(null);
   const pMap = Object.fromEntries(projects.map(p=>[p.id,p]));
+  const vMap = Object.fromEntries(vendors.map(v=>[v.id,v]));
+
+  // Build reverse map: for each id, which items list it in their conflictsWith
+  const referencedBy = useMemo(()=>{
+    const map = {};
+    changes.forEach(c=>(c.conflictsWith||[]).forEach(oid=>{
+      if(!map[oid]) map[oid]=[];
+      map[oid].push(c.id);
+    }));
+    return map;
+  }, [changes]);
 
   const open = [...changes].filter(c=>OPEN_STATUSES.includes(c.status)).sort((a,b)=>new Date(b.dateSubmitted)-new Date(a.dateSubmitted));
   const done = [...changes].filter(c=>DONE_STATUSES.includes(c.status)).sort((a,b)=>new Date(b.dateSubmitted)-new Date(a.dateSubmitted));
 
   const Card = ({c, last}) => {
     const isExp = expanded===c.id;
-    const hasConflict = (c.conflictsWith?.length ?? 0) > 0;
     const proj = pMap[c.project];
-    const conflictTitles = (c.conflictsWith||[]).map(cid=>changes.find(x=>x.id===cid)?.title).filter(Boolean);
+    const requester = vMap[c.suggestedBy];
+    const allConflictIds = [...new Set([...(c.conflictsWith||[]), ...(referencedBy[c.id]||[])])];
+    const hasConflict = allConflictIds.length > 0;
+    const conflictTitles = allConflictIds.map(cid=>changes.find(x=>x.id===cid)?.title).filter(Boolean);
 
     return (
       <div style={{borderBottom:last?"none":"1px solid "+T.borderSub}}>
@@ -293,7 +306,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
             </div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
               {proj&&<PTag name={proj.name} color={proj.color}/>}
-              <span style={{fontSize:11,color:T.muted}}>{c.category}</span>
+              {requester&&<span style={{fontSize:11,color:T.muted}}>Requested by {requester.name}</span>}
               <span style={{fontSize:11,color:T.muted}}>Submitted {fmt(c.dateSubmitted)}</span>
             </div>
             {/* Conflict notice — always visible, no click required */}
