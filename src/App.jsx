@@ -20,7 +20,7 @@ const F = "'Manrope', sans-serif";
 const STATUSES = {
   suggested: { label: "Requested", c: T.warn, bg: T.warnBg, bdr: T.warnBdr, Icon: CircleDot },
   approved: { label: "Approved", c: T.info, bg: T.infoBg, bdr: T.infoBdr, Icon: CheckCircle2 },
-  "in-progress": { label: "In Progress", c: T.primary, bg: T.primaryBg, bdr: T.primaryBdr, Icon: Loader2 },
+  "in-progress": { label: "In Progress", c: "#818CF8", bg: "#1e1b4b", bdr: "#3730A3", Icon: Loader2 },
   implemented: { label: "Built", c: T.success, bg: T.successBg, bdr: T.successBdr, Icon: CheckCheck },
   verified: { label: "Live", c: T.success, bg: T.successBg, bdr: T.successBdr, Icon: CheckCircle2 },
   reversed: { label: "Reversed", c: T.danger, bg: T.dangerBg, bdr: T.dangerBdr, Icon: RotateCcw },
@@ -452,7 +452,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
       {/* Header */}
       <div className="client-header" style={{ borderBottom: "1px solid " + T.border, padding: "24px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.warn, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>Request Overview</div>
         </div>
         <div className="client-stats" style={{ display: "flex", gap: 20 }}>
@@ -475,8 +475,8 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
 
         {/* Note from Captive Demand */}
         {brief && brief.trim() && (
-          <div style={{ background: T.surface, borderLeft: "3px solid " + T.warn, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.warn, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
+          <div style={{ background: T.surface, borderLeft: "3px solid " + T.primary, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
             <div style={{ fontSize: 14, color: T.sub, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{brief}</div>
           </div>
         )}
