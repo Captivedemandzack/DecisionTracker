@@ -9,7 +9,7 @@ const T = {
   bg: "#141418", surface: "#1E1E24", raised: "#28282F",
   border: "#40424D", borderSub: "#2A2A32",
   text: "#F4F1ED", sub: "#9DA2B3", muted: "#6E7180",
-  lime: "#EEF3AD", limeBg: "#22260F", limeBdr: "#3D4220",
+  primary: "#ff6400", primaryBg: "#331800", primaryBdr: "#663000",
   danger: "#F97066", dangerBg: "#2D1A1A", dangerBdr: "#5C2424",
   warn: "#FDB022", warnBg: "#2D2214", warnBdr: "#5C3D10",
   success: "#6CE9A6", successBg: "#122D1E", successBdr: "#1C5236",
@@ -20,7 +20,7 @@ const F = "'Manrope', sans-serif";
 const STATUSES = {
   suggested: { label: "Requested", c: T.warn, bg: T.warnBg, bdr: T.warnBdr, Icon: CircleDot },
   approved: { label: "Approved", c: T.info, bg: T.infoBg, bdr: T.infoBdr, Icon: CheckCircle2 },
-  "in-progress": { label: "In Progress", c: T.lime, bg: T.limeBg, bdr: T.limeBdr, Icon: Loader2 },
+  "in-progress": { label: "In Progress", c: T.primary, bg: T.primaryBg, bdr: T.primaryBdr, Icon: Loader2 },
   implemented: { label: "Built", c: T.success, bg: T.successBg, bdr: T.successBdr, Icon: CheckCheck },
   verified: { label: "Live", c: T.success, bg: T.successBg, bdr: T.successBdr, Icon: CheckCircle2 },
   reversed: { label: "Reversed", c: T.danger, bg: T.dangerBg, bdr: T.dangerBdr, Icon: RotateCcw },
@@ -49,9 +49,9 @@ const VENDORS_DEFAULT = [
 ];
 
 const PROJECTS_DEFAULT = [
-  { id: "p1", name: "Mantality Health", color: T.lime },
-  { id: "p2", name: "Agentis", color: T.info },
-  { id: "p3", name: "Arete", color: "#C084FC" },
+  { id: "p1", name: "Mantality Health" },
+  { id: "p2", name: "Agentis" },
+  { id: "p3", name: "Arete" },
 ];
 
 const SEED = [
@@ -133,7 +133,7 @@ const Badge = ({ status }) => {
 const Chip = ({ name }) => name
   ? <span style={{ fontSize: 11, fontWeight: 500, padding: "2px 9px", borderRadius: 3, background: T.raised, color: T.sub, border: "1px solid " + T.border, whiteSpace: "nowrap" }}>{name}</span>
   : <span style={{ color: T.muted, fontSize: 11 }}>—</span>;
-const PTag = ({ name, color }) => <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 3, background: color + "22", color, border: "1px solid " + color + "44", whiteSpace: "nowrap" }}>{name}</span>;
+const PTag = ({ name }) => <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 4, background: "rgba(255,255,255,0.04)", color: T.sub, border: "1px solid rgba(255,255,255,0.08)", whiteSpace: "nowrap", backdropFilter: "blur(4px)" }}>{name}</span>;
 const Lbl = ({ children }) => <div style={{ fontSize: 10, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{children}</div>;
 const HR = () => <div style={{ height: 1, background: T.borderSub }} />;
 const GhostBtn = ({ onClick, children, danger }) => (
@@ -170,7 +170,7 @@ function ImportModal({ onAdd, onClose }) {
       <div style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 10, padding: 26, width: "100%", maxWidth: 540, boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }} onClick={e => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 18 }}>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 15, color: T.text, display: "flex", alignItems: "center", gap: 8 }}><Mail size={15} color={T.lime} />Import from email</div>
+            <div style={{ fontWeight: 800, fontSize: 15, color: T.text, display: "flex", alignItems: "center", gap: 8 }}><Mail size={15} color={T.primary} />Import from email</div>
             <div style={{ fontSize: 11, color: T.muted, marginTop: 3 }}>Paste email text and Claude will extract the requests</div>
           </div>
           <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: T.muted, padding: 0 }}><X size={16} /></button>
@@ -180,7 +180,7 @@ function ImportModal({ onAdd, onClose }) {
           {error && <div style={{ background: T.dangerBg, border: "1px solid " + T.dangerBdr, borderRadius: 5, padding: "9px 11px", marginTop: 10, fontSize: 11, color: T.danger }}>{error}</div>}
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12, gap: 8 }}>
             <GhostBtn onClick={onClose}>Cancel</GhostBtn>
-            <button onClick={run} disabled={loading || !paste.trim()} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 5, border: "none", background: T.lime, cursor: (loading || !paste.trim()) ? "not-allowed" : "pointer", fontSize: 12, fontWeight: 700, color: "#1a1d0a", fontFamily: F, opacity: (loading || !paste.trim()) ? 0.5 : 1 }}>
+            <button onClick={run} disabled={loading || !paste.trim()} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 5, border: "none", background: T.primary, cursor: (loading || !paste.trim()) ? "not-allowed" : "pointer", fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: F, opacity: (loading || !paste.trim()) ? 0.5 : 1 }}>
               {loading ? "Extracting..." : "Extract changes"}
             </button>
           </div>
@@ -200,7 +200,7 @@ function ImportModal({ onAdd, onClose }) {
           </div>
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
             <GhostBtn onClick={() => { setStep("input"); setParsed(null); }}>Back</GhostBtn>
-            <button onClick={() => onAdd(parsed)} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 5, border: "none", background: T.lime, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#1a1d0a", fontFamily: F }}>
+            <button onClick={() => onAdd(parsed)} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 5, border: "none", background: T.primary, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: F }}>
               <Plus size={12} />Add all {parsed.length}
             </button>
           </div>
@@ -259,7 +259,7 @@ function FormModal({ editId, form, setForm, onSave, onClose, projects, vendors, 
         </div>
         <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 18 }}>
           <GhostBtn onClick={onClose}>Cancel</GhostBtn>
-          <button onClick={onSave} style={{ padding: "8px 16px", borderRadius: 5, border: "none", background: T.lime, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#1a1d0a", fontFamily: F }}>{editId ? "Save changes" : "Log change"}</button>
+          <button onClick={onSave} style={{ padding: "8px 16px", borderRadius: 5, border: "none", background: T.primary, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#fff", fontFamily: F }}>{editId ? "Save changes" : "Log change"}</button>
         </div>
       </div>
     </div>
@@ -305,7 +305,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
               <span style={{ fontWeight: 700, fontSize: 14, color: hasConflict ? T.danger : T.text, lineHeight: 1.4 }}>{c.title}</span>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-              {proj && <PTag name={proj.name} color={proj.color} />}
+              {proj && <PTag name={proj.name} />}
               {requester && <span style={{ fontSize: 11, color: T.muted }}>Requested by {requester.name}</span>}
               <span style={{ fontSize: 11, color: T.muted }}>Submitted {fmt(c.dateSubmitted)}</span>
             </div>
@@ -339,7 +339,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
       {/* Header */}
       <div style={{ borderBottom: "1px solid " + T.border, padding: "24px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.lime, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>Request Overview</div>
         </div>
         <div style={{ display: "flex", gap: 20 }}>
@@ -355,7 +355,7 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
           )}
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Total</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: T.sub, lineHeight: 1 }}>{changes.length}</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{changes.length}</div>
           </div>
         </div>
       </div>
@@ -364,8 +364,8 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
 
         {/* Note from Captive Demand */}
         {brief && brief.trim() && (
-          <div style={{ background: T.surface, borderLeft: "3px solid " + T.lime, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.lime, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
+          <div style={{ background: T.surface, borderLeft: "3px solid " + T.primary, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
             <div style={{ fontSize: 14, color: T.sub, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{brief}</div>
           </div>
         )}
@@ -552,7 +552,7 @@ export default function App() {
       let pId = projects[0].id;
       const pn = (e.projectName || "").toLowerCase();
       const mp = cp.find(p => pn && (p.name.toLowerCase().includes(pn.split(" ")[0]) || pn.includes(p.name.toLowerCase().split(" ")[0])));
-      if (mp) { pId = mp.id; } else if (e.projectName && e.projectName.length > 2) { const nw = { id: "p" + uid(), name: e.projectName, color: T.info }; np.push(nw); cp = [...cp, nw]; pId = nw.id; }
+      if (mp) { pId = mp.id; } else if (e.projectName && e.projectName.length > 2) { const nw = { id: "p" + uid(), name: e.projectName }; np.push(nw); cp = [...cp, nw]; pId = nw.id; }
       added.push({ id: uid(), project: pId, title: e.title || "Untitled", description: e.description || "", suggestedBy: vId, approvedBy: null, implementedBy: null, status: e.status || "suggested", category: CATS.includes(e.category) ? e.category : "Other", dateSubmitted: e.dateSubmitted || new Date().toISOString().slice(0, 10), dateImplemented: null, evidenceNote: e.evidenceNote || "", conflictsWith: [], priority: e.priority || "medium" });
     });
     if (nv.length) setVends(vs => [...vs, ...nv]);
@@ -590,10 +590,10 @@ export default function App() {
     return (
       <div>
         {/* ── Client note editor ── */}
-        <div style={{ background: T.surface, border: "1px solid " + T.border, borderLeft: "3px solid " + T.lime, borderRadius: 8, padding: "18px 20px", marginBottom: 24 }}>
+        <div style={{ background: T.surface, border: "1px solid " + T.border, borderLeft: "3px solid " + T.primary, borderRadius: 8, padding: "18px 20px", marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: T.lime, textTransform: "uppercase", letterSpacing: "0.1em" }}>Client Note</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em" }}>Client Note</div>
               <div style={{ fontSize: 11, color: T.muted, marginTop: 3 }}>This appears at the top of the client view. Write whatever you want them to read first.</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
@@ -624,7 +624,7 @@ export default function App() {
                 onChange={e => setBriefDraft(e.target.value)}
                 placeholder={"Write a note to your client here. For example:\n\n\"Before we kick off the next sprint, we want to flag something. You've asked us to build a drop-off tracking workflow and also to remove the Cal.com redirect — but these two things depend on each other. Let's get on a call and decide which direction we're going first.\""}
                 rows={6}
-                style={{ background: T.bg, border: "1px solid " + T.limeBdr, color: T.sub, borderRadius: 6, padding: "12px 14px", fontFamily: F, fontSize: 13, outline: "none", width: "100%", boxSizing: "border-box", resize: "vertical", lineHeight: 1.8 }}
+                style={{ background: T.bg, border: "1px solid " + T.primaryBdr, color: T.sub, borderRadius: 6, padding: "12px 14px", fontFamily: F, fontSize: 13, outline: "none", width: "100%", boxSizing: "border-box", resize: "vertical", lineHeight: 1.8 }}
               />
               <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10, gap: 8 }}>
                 <GhostBtn onClick={() => { setBrief(briefDraft); setBriefEdit(false); }}>Done</GhostBtn>
@@ -648,7 +648,7 @@ export default function App() {
             const pend = pc.filter(c => OPEN_STATUSES.includes(c.status)).length;
             const disc = pc.filter(c => conflictSet.has(c.id)).length;
             return (
-              <div key={proj.id} onClick={() => { setFP(proj.id); setTab("log"); }} style={{ background: T.surface, border: "1px solid " + T.border, borderTop: "3px solid " + proj.color, borderRadius: 8, padding: "16px 18px", cursor: "pointer" }}>
+              <div key={proj.id} onClick={() => { setFP(proj.id); setTab("log"); }} style={{ background: T.surface, border: "1px solid " + T.border, borderRadius: 8, padding: "16px 18px", cursor: "pointer" }}>
                 <div style={{ fontWeight: 700, fontSize: 13, color: T.text, marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                   {proj.name}
                   {disc > 0 && <span style={{ fontSize: 9, fontWeight: 700, background: T.dangerBg, color: T.danger, border: "1px solid " + T.dangerBdr, borderRadius: 3, padding: "2px 6px" }}>CONFLICT</span>}
@@ -719,11 +719,11 @@ export default function App() {
               return (
                 <div key={c.id}>
                   {i > 0 && <HR />}
-                  <div onClick={() => setExp(isOpen ? null : c.id)} style={{ padding: "13px 16px", cursor: "pointer", borderLeft: "3px solid " + (hasD ? T.danger : isOpen ? T.lime : "transparent"), background: isOpen ? T.raised : hasD ? "#1a0d0d" : "transparent" }}>
+                  <div onClick={() => setExp(isOpen ? null : c.id)} style={{ padding: "13px 16px", cursor: "pointer", borderLeft: "3px solid " + (hasD ? T.danger : isOpen ? T.primary : "transparent"), background: isOpen ? T.raised : hasD ? "#1a0d0d" : "transparent" }}>
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontWeight: 600, fontSize: 12, color: T.text, display: "flex", gap: 6, alignItems: "center", marginBottom: 5, flexWrap: "wrap" }}>{hasD && <AlertTriangle size={12} color={T.danger} />}{c.title}</div>
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>{proj && <PTag name={proj.name} color={proj.color} />}<span style={{ fontSize: 10, color: T.muted }}>{c.category}</span><span style={{ fontSize: 10, color: T.muted }}>{fmt(c.dateSubmitted)}</span>{c.dateImplemented && <span style={{ fontSize: 10, color: T.success }}>Live {fmt(c.dateImplemented)}</span>}</div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>{proj && <PTag name={proj.name} />}<span style={{ fontSize: 10, color: T.muted }}>{c.category}</span><span style={{ fontSize: 10, color: T.muted }}>{fmt(c.dateSubmitted)}</span>{c.dateImplemented && <span style={{ fontSize: 10, color: T.success }}>Live {fmt(c.dateImplemented)}</span>}</div>
                       </div>
                       <div style={{ display: "flex", gap: 7, alignItems: "center", flexShrink: 0 }}><Chip name={vMap[c.suggestedBy]?.name} /><Badge status={c.status} />{isOpen ? <ChevronUp size={13} color={T.muted} /> : <ChevronDown size={13} color={T.muted} />}</div>
                     </div>
@@ -753,7 +753,7 @@ export default function App() {
       {["client", "internal", "agency"].map(type => {
         const group = vendors.filter(v => v.type === type);
         if (!group.length) return null;
-        const tc = { client: { c: T.info, label: "Client" }, internal: { c: T.lime, label: "Your Team" }, agency: { c: "#C084FC", label: "Partner Agencies" } }[type];
+        const tc = { client: { c: T.info, label: "Client" }, internal: { c: T.primary, label: "Your Team" }, agency: { c: "#C084FC", label: "Partner Agencies" } }[type];
         return (
           <div key={type} style={{ marginBottom: 28 }}>
             <div style={{ marginBottom: 12 }}><span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 3, background: tc.c + "22", color: tc.c, border: "1px solid " + tc.c + "44", textTransform: "uppercase", letterSpacing: "0.08em" }}>{tc.label}</span></div>
@@ -767,7 +767,7 @@ export default function App() {
                   <div key={v.id} style={{ background: T.surface, border: "1px solid " + T.border, borderTop: "2px solid " + tc.c, borderRadius: 8, padding: "15px 16px" }}>
                     <div style={{ fontWeight: 700, fontSize: 13, color: T.text, marginBottom: 2 }}>{v.name}</div>
                     <div style={{ fontSize: 11, color: T.muted, marginBottom: 10 }}>{v.role}</div>
-                    {pids.length > 0 && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>{pids.map(pid => { const p = pMap[pid]; return p ? <PTag key={pid} name={p.name} color={p.color} /> : null; })}</div>}
+                    {pids.length > 0 && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>{pids.map(pid => { const p = pMap[pid]; return p ? <PTag key={pid} name={p.name} /> : null; })}</div>}
                     <div style={{ display: "flex", gap: 16, paddingTop: 10, borderTop: "1px solid " + T.borderSub }}>
                       {[["Requested", req, T.warn], ["Approved", app, T.info], ["Built", blt, T.success]].map(([lbl, num, col]) => (<div key={lbl}><div style={{ fontSize: 9, fontWeight: 700, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>{lbl}</div><div style={{ fontSize: 20, fontWeight: 800, color: num > 0 ? col : T.muted }}>{num}</div></div>))}
                     </div>
@@ -789,21 +789,21 @@ export default function App() {
     <div style={{ fontFamily: F, background: T.bg, color: T.text, minHeight: "100vh", display: "flex", fontSize: 13, lineHeight: 1.5 }}>
       <div style={{ width: 206, background: T.surface, borderRight: "1px solid " + T.border, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 50 }}>
         <div style={{ padding: "20px 16px 14px", borderBottom: "1px solid " + T.border }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: T.lime }}>Captive Demand</div>
+          <div style={{ fontSize: 13, fontWeight: 800, color: T.primary }}>Captive Demand</div>
           <div style={{ fontSize: 9, color: T.muted, marginTop: 3, letterSpacing: "0.07em", textTransform: "uppercase" }}>Change Tracker</div>
         </div>
         <div style={{ padding: "10px 14px", borderBottom: "1px solid " + T.borderSub, display: "flex", gap: 14 }}>
-          {[["Open", totalOpen, T.warn], ["Flags", totalConf, totalConf > 0 ? T.danger : T.muted], ["Total", changes.length, T.sub]].map(([lbl, num, col]) => (<div key={lbl}><div style={{ fontSize: 8, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em" }}>{lbl}</div><div style={{ fontSize: 17, fontWeight: 800, color: col }}>{num}</div></div>))}
+          {[["Open", totalOpen, T.warn], ["Flags", totalConf, totalConf > 0 ? T.danger : T.muted], ["Total", changes.length, "#ffffff"]].map(([lbl, num, col]) => (<div key={lbl}><div style={{ fontSize: 8, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em" }}>{lbl}</div><div style={{ fontSize: 17, fontWeight: 800, color: col }}>{num}</div></div>))}
         </div>
         <nav style={{ padding: "6px 0", flex: 1 }}>
           {TABS.map(({ id, label }) => {
             const active = tab === id;
-            return (<button key={id} onClick={() => setTab(id)} style={{ display: "flex", alignItems: "center", width: "calc(100% - 12px)", margin: "1px 6px", padding: "9px 10px", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: active ? 700 : 400, color: active ? T.lime : T.muted, background: active ? T.limeBg : "transparent", textAlign: "left", fontFamily: F }}>{label}{id === "log" && conflictSet.size > 0 && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 700, background: T.dangerBg, color: T.danger, border: "1px solid " + T.dangerBdr, borderRadius: 3, padding: "1px 5px" }}>{conflictSet.size}</span>}</button>);
+            return (<button key={id} onClick={() => setTab(id)} style={{ display: "flex", alignItems: "center", width: "calc(100% - 12px)", margin: "1px 6px", padding: "9px 10px", border: "none", borderRadius: 5, cursor: "pointer", fontSize: 12, fontWeight: active ? 700 : 400, color: active ? T.primary : T.muted, background: active ? T.primaryBg : "transparent", textAlign: "left", fontFamily: F }}>{label}{id === "log" && conflictSet.size > 0 && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 700, background: T.dangerBg, color: T.danger, border: "1px solid " + T.dangerBdr, borderRadius: 3, padding: "1px 5px" }}>{conflictSet.size}</span>}</button>);
           })}
         </nav>
         <div style={{ padding: "10px", borderTop: "1px solid " + T.border, display: "flex", flexDirection: "column", gap: 6 }}>
-          <button onClick={() => setImp(true)} style={{ display: "flex", alignItems: "center", gap: 7, width: "100%", padding: "8px 10px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 500, color: T.sub, fontFamily: F }}><Mail size={12} color={T.lime} />Import from email</button>
-          <button onClick={openAdd} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, width: "100%", padding: "8px 10px", borderRadius: 5, border: "none", background: T.lime, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#1a1d0a", fontFamily: F }}><Plus size={12} />Log change</button>
+          <button onClick={() => setImp(true)} style={{ display: "flex", alignItems: "center", gap: 7, width: "100%", padding: "8px 10px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 500, color: T.sub, fontFamily: F }}><Mail size={12} color={T.primary} />Import from email</button>
+          <button onClick={openAdd} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, width: "100%", padding: "8px 10px", borderRadius: 5, border: "none", background: T.primary, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#fff", fontFamily: F }}><Plus size={12} />Log change</button>
         </div>
       </div>
 
