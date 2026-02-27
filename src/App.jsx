@@ -142,6 +142,43 @@ const GhostBtn = ({ onClick, children, danger }) => (
   </button>
 );
 
+// ── Compression Helpers ──────────────────────────────────────────
+async function compressData(data) {
+  try {
+    const jsonStr = JSON.stringify(data);
+    if (!window.CompressionStream) return btoa(unescape(encodeURIComponent(jsonStr)));
+    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+    const resp = new Response(stream);
+    const blob = await resp.blob();
+    const buffer = await blob.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  } catch (e) {
+    console.error("Compression failed", e);
+    return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  }
+}
+
+async function decompressData(b64Str) {
+  try {
+    const binary = atob(b64Str);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    if (!window.DecompressionStream) {
+      try { return JSON.parse(decodeURIComponent(escape(binary))); } catch (e) { return null; }
+    }
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    const resp = new Response(stream);
+    const text = await resp.text();
+    return JSON.parse(text);
+  } catch (e) {
+    // Fallback if it wasn't compressed or failed
+    try { return JSON.parse(decodeURIComponent(escape(atob(b64Str)))); } catch (err) { return null; }
+  }
+}
+
 // ── Import Modal ──────────────────────────────────────────────────
 function ImportModal({ onAdd, onClose }) {
   const [paste, setPaste] = useState("");
@@ -283,7 +320,63 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
     return map;
   }, [changes]);
 
-  const open = [...changes].filter(c => OPEN_STATUSES.includes(c.status)).sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+  const sortConflictsGrouped = (arr) => {
+    // 1. Group items by connected components of conflicts
+    const adj = {};
+    changes.forEach(c => adj[c.id] = new Set());
+    changes.forEach(c => {
+      (c.conflictsWith || []).forEach(oid => {
+        if (adj[c.id]) adj[c.id].add(oid);
+        if (adj[oid]) adj[oid].add(c.id);
+      });
+    });
+
+    const components = {}; // id -> componentId
+    let nextCompId = 0;
+    const visited = new Set();
+
+    changes.forEach(c => {
+      if (!visited.has(c.id)) {
+        const compId = nextCompId++;
+        const q = [c.id];
+        while (q.length > 0) {
+          const curr = q.shift();
+          if (!visited.has(curr)) {
+            visited.add(curr);
+            components[curr] = compId;
+            if (adj[curr]) {
+              for (const n of adj[curr]) {
+                if (!visited.has(n)) q.push(n);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 2. Find the newest date for each component
+    const compDates = {};
+    arr.forEach(c => {
+      const cid = components[c.id];
+      const d = new Date(c.dateSubmitted).getTime();
+      if (!compDates[cid] || d > compDates[cid]) {
+        compDates[cid] = d;
+      }
+    });
+
+    // 3. Sort by component date (desc), then component ID, then individual date (desc)
+    return arr.sort((a, b) => {
+      const cA = components[a.id];
+      const cB = components[b.id];
+      if (cA !== cB) {
+        if (compDates[cB] !== compDates[cA]) return compDates[cB] - compDates[cA];
+        return cA - cB; // Tiebreaker so groups stay together
+      }
+      return new Date(b.dateSubmitted).getTime() - new Date(a.dateSubmitted).getTime();
+    });
+  };
+
+  const open = sortConflictsGrouped([...changes].filter(c => OPEN_STATUSES.includes(c.status)));
   const done = [...changes].filter(c => DONE_STATUSES.includes(c.status)).sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
 
   const Card = ({ c, last }) => {
@@ -300,29 +393,32 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
           {/* conflict stripe */}
           <div style={{ width: 3, borderRadius: 2, alignSelf: "stretch", background: hasConflict ? T.danger : OPEN_STATUSES.includes(c.status) ? T.border : "transparent", flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-              {hasConflict && <AlertTriangle size={13} color={T.danger} />}
-              <span style={{ fontWeight: 700, fontSize: 14, color: hasConflict ? T.danger : T.text, lineHeight: 1.4 }}>{c.title}</span>
-            </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            {/* Tags on top for mobile wrapping */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
               {proj && <PTag name={proj.name} />}
+              <Badge status={c.status} />
               {requester && <span style={{ fontSize: 11, color: T.muted }}>Requested by {requester.name}</span>}
               <span style={{ fontSize: 11, color: T.muted }}>Submitted {fmt(c.dateSubmitted)}</span>
             </div>
-            {/* Conflict notice — always visible, no click required */}
+
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
+              {hasConflict && <AlertTriangle size={14} color={T.danger} style={{ flexShrink: 0, marginTop: 2 }} />}
+              <span style={{ fontWeight: 700, fontSize: 14, color: hasConflict ? T.danger : T.text, lineHeight: 1.4, flex: 1 }}>{c.title}</span>
+            </div>
+
+            {/* Conflict notice — always visible, flex wrap enabled */}
             {hasConflict && conflictTitles.length > 0 && (
-              <div style={{ marginTop: 10, display: "inline-flex", alignItems: "flex-start", gap: 8, background: T.dangerBg, border: "1px solid " + T.dangerBdr, borderRadius: 6, padding: "9px 13px" }}>
-                <AlertTriangle size={12} color={T.danger} style={{ marginTop: 1, flexShrink: 0 }} />
-                <div>
+              <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: 8, background: T.dangerBg, border: "1px solid " + T.dangerBdr, borderRadius: 6, padding: "10px 14px", width: "100%", boxSizing: "border-box" }}>
+                <AlertTriangle size={12} color={T.danger} style={{ marginTop: 2, flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 10, fontWeight: 700, color: T.danger, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 4 }}>Conflicts with</div>
-                  {conflictTitles.map((t, i) => <div key={i} style={{ fontSize: 12, color: T.danger, lineHeight: 1.6 }}>"{t}"</div>)}
+                  {conflictTitles.map((t, i) => <div key={i} style={{ fontSize: 12, color: T.danger, lineHeight: 1.5, marginBottom: i < conflictTitles.length - 1 ? 4 : 0 }}>"{t}"</div>)}
                 </div>
               </div>
             )}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-            <Badge status={c.status} />
-            {isExp ? <ChevronUp size={13} color={T.muted} /> : <ChevronDown size={13} color={T.muted} />}
+          <div style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+            {isExp ? <ChevronUp size={16} color={T.muted} /> : <ChevronDown size={16} color={T.muted} />}
           </div>
         </div>
         {isExp && (
@@ -466,18 +562,17 @@ export default function App() {
   useEffect(() => {
     if (isClient) {
       // For the client view, try to load data from the URL hash first
-      try {
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-          const decoded = JSON.parse(decodeURIComponent(escape(atob(hash))));
-          if (decoded.changes) setChgs(decoded.changes);
-          if (decoded.vendors) setVends(decoded.vendors);
-          if (decoded.projects) setProjs(decoded.projects);
-          if (typeof decoded.brief === "string") setBrief(decoded.brief);
-          return; // Skip fetching from cloud if hash data exists and is valid
-        }
-      } catch (e) {
-        console.error("Failed to parse client data from URL", e);
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        decompressData(hash).then(decoded => {
+          if (decoded) {
+            if (decoded.changes) setChgs(decoded.changes);
+            if (decoded.vendors) setVends(decoded.vendors);
+            if (decoded.projects) setProjs(decoded.projects);
+            if (typeof decoded.brief === "string") setBrief(decoded.brief);
+          }
+        }).catch(e => console.error("Failed to parse client data from URL", e));
+        return; // Skip fetching from cloud if hash data exists and is valid
       }
     }
 
@@ -561,7 +656,7 @@ export default function App() {
     setImp(false);
   }
 
-  function copyLink() {
+  async function copyLink() {
     let currentBrief = brief;
     if (briefEdit) {
       currentBrief = briefDraft;
@@ -569,7 +664,7 @@ export default function App() {
       setBriefEdit(false);
     }
     pushToCloud({ changes, vendors, projects, brief: currentBrief });
-    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ changes, vendors, projects, brief: currentBrief }))));
+    const payload = await compressData({ changes, vendors, projects, brief: currentBrief });
     navigator.clipboard.writeText(window.location.origin + "?view=client#" + payload).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   }
 
@@ -600,7 +695,7 @@ export default function App() {
               <button onClick={copyLink} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 600, color: copied ? T.success : T.sub, fontFamily: F }}>
                 {copied ? <Check size={11} /> : <Copy size={11} />}{copied ? "Copied!" : "Copy client link"}
               </button>
-              <a href="#" onClick={(e) => {
+              <a href="#" onClick={async (e) => {
                 e.preventDefault();
                 let currentBrief = brief;
                 if (briefEdit) {
@@ -609,7 +704,7 @@ export default function App() {
                   setBriefEdit(false);
                 }
                 pushToCloud({ changes, vendors, projects, brief: currentBrief });
-                const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ changes, vendors, projects, brief: currentBrief }))));
+                const payload = await compressData({ changes, vendors, projects, brief: currentBrief });
                 window.open("?view=client#" + payload, "_blank");
               }} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 5, border: "1px solid " + T.border, background: T.raised, cursor: "pointer", fontSize: 11, fontWeight: 600, color: T.sub, fontFamily: F, textDecoration: "none" }}>
                 <Eye size={11} />Preview
