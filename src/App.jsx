@@ -452,10 +452,14 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
       {/* Header */}
       <div className="client-header" style={{ borderBottom: "1px solid " + T.border, padding: "24px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.warn, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 5 }}>Captive Demand</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>Request Overview</div>
         </div>
         <div className="client-stats" style={{ display: "flex", gap: 20 }}>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Flags</div>
+            <div style={{ fontSize: 28, fontWeight: 800, color: T.danger, lineHeight: 1 }}>{conflictSet.size}</div>
+          </div>
           <div style={{ textAlign: "right" }}>
             <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Open</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: T.warn, lineHeight: 1 }}>{open.length}</div>
@@ -464,10 +468,6 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
             <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Completed</div>
             <div style={{ fontSize: 28, fontWeight: 800, color: T.success, lineHeight: 1 }}>{done.length}</div>
           </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 10, color: T.muted, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 2 }}>Total</div>
-            <div style={{ fontSize: 28, fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{changes.length}</div>
-          </div>
         </div>
       </div>
 
@@ -475,8 +475,8 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
 
         {/* Note from Captive Demand */}
         {brief && brief.trim() && (
-          <div style={{ background: T.surface, borderLeft: "3px solid " + T.primary, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
+          <div style={{ background: T.surface, borderLeft: "3px solid " + T.warn, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.warn, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
             <div style={{ fontSize: 14, color: T.sub, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{brief}</div>
           </div>
         )}
@@ -485,7 +485,6 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
         <div style={{ marginBottom: 40 }}>
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: T.text, marginBottom: 4 }}>Open Requests</div>
-            <div style={{ fontSize: 12, color: T.muted }}>What has been asked for and hasn't been built yet — newest first</div>
           </div>
 
           {openConflicts.length > 0 && (
