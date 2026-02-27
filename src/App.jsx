@@ -399,25 +399,25 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
 
     return (
       <div style={{ borderBottom: last ? "none" : "1px solid " + (embedded ? T.dangerBdr : T.borderSub) }}>
-        <div onClick={() => setExp(isExp ? null : c.id)} style={{ padding: embedded ? "12px 14px" : "16px 0", cursor: "pointer", display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div onClick={() => setExp(isExp ? null : c.id)} style={{ padding: embedded ? "16px 20px" : "24px 0", cursor: "pointer", display: "flex", alignItems: "flex-start", gap: 16 }}>
           {/* left accent stripe */}
-          {!embedded && <div style={{ width: 3, borderRadius: 2, alignSelf: "stretch", background: hasConflict ? T.danger : OPEN_STATUSES.includes(c.status) ? T.border : "transparent", flexShrink: 0 }} />}
+          {!embedded && <div style={{ width: 4, borderRadius: 2, alignSelf: "stretch", background: hasConflict ? T.danger : OPEN_STATUSES.includes(c.status) ? T.border : "transparent", flexShrink: 0 }} />}
 
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 16, justifyContent: "space-between" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 {/* tags */}
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 6 }}>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", marginBottom: 12 }}>
                   {proj && <PTag name={proj.name} />}
                   <Badge status={c.status} />
-                  <div style={{ fontSize: 11, color: T.muted, marginLeft: 2 }}>
-                    Requested by {requester ? requester.name : "unknown"} <span style={{ opacity: 0.5, margin: "0 4px" }}>•</span> Submitted {fmt(c.dateSubmitted)}
+                  <div style={{ fontSize: 13, color: T.muted, marginLeft: 4 }}>
+                    Requested by <span style={{ color: T.text, fontWeight: 500 }}>{requester ? requester.name : "unknown"}</span> <span style={{ opacity: 0.3, margin: "0 10px" }}>•</span> Submitted <span style={{ color: T.text, fontWeight: 500 }}>{fmt(c.dateSubmitted)}</span>
                   </div>
                 </div>
 
                 {/* title */}
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, flexWrap: "wrap" }}>
-                  <span style={{ fontWeight: 700, fontSize: 14, color: T.text, lineHeight: 1.4, flex: 1 }}>{c.title}</span>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+                  <span style={{ fontWeight: 800, fontSize: 16, color: T.text, lineHeight: 1.4, flex: 1 }}>{c.title}</span>
                 </div>
 
                 {/* inline conflict notice */}
@@ -471,13 +471,26 @@ function ClientView({ changes, projects, vendors, conflictSet, brief }) {
         </div>
       </div>
 
-      <div className="client-container" style={{ maxWidth: 800, margin: "0 auto", padding: "36px 40px" }}>
+      <div className="client-container" style={{ maxWidth: 1040, margin: "0 auto", padding: "36px 40px" }}>
 
         {/* Note from Captive Demand */}
         {brief && brief.trim() && (
-          <div style={{ background: T.surface, borderLeft: "3px solid " + T.primary, borderRadius: 8, padding: "20px 24px", marginBottom: 36 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>Note from Captive Demand</div>
-            <div style={{ fontSize: 14, color: T.sub, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>{brief}</div>
+          <div style={{ background: T.surface, borderLeft: "3px solid " + T.primary, borderRadius: 8, padding: "26px 32px", marginBottom: 40 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: T.primary, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 16 }}>Note from Captive Demand</div>
+            <div style={{ fontSize: 14, color: T.sub, lineHeight: 1.8 }}>
+              {brief.split('\n').map((line, i) => {
+                const colonIdx = line.indexOf(':');
+                if (colonIdx !== -1 && colonIdx < 50) {
+                  return (
+                    <div key={i} style={{ marginBottom: 12 }}>
+                      <span style={{ color: T.text, fontWeight: 700 }}>{line.slice(0, colonIdx + 1)}</span>
+                      {line.slice(colonIdx + 1)}
+                    </div>
+                  );
+                }
+                return <div key={i} style={{ marginBottom: line.trim() === '' ? 0 : 12, minHeight: line.trim() === '' ? 14 : 'auto' }}>{line}</div>;
+              })}
+            </div>
           </div>
         )}
 
